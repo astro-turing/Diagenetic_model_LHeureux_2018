@@ -622,7 +622,7 @@
            REAL*8 dt,dx,P(35),sigca(0:1000),sigco(0:1000),dca(0:1000),dco(0:1000),Rca(0:1000),Rco(0:1000)
            REAL*8 aA1(0:1000),bA1(0:1000),cA1(0:1000),aA2(0:1000),bA2(0:1000),cA2(0:1000),Byca(0:1000),Byco(0:1000)
            REAL*8 aA3(0:1000),bA3(0:1000),cA3(0:1000),Bypo(0:1000),Rp(0:1000)
-           REAL*8 a,b,t
+           REAL*8 a,b,t,eps
            integer N,i
            COMMON/par/P
            dx=P(16)
