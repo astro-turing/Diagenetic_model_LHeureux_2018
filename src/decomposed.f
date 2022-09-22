@@ -7,12 +7,14 @@
        program marl_PDE
            implicit none
            ! ~\~ begin <<lit/index.md|main-declare-variables>>[init]
-           REAL*8 pho(0:1000),cao(0:1000),coo(0:1000),ARAo(0:1000),CALo(0:1000)
-           REAL*8  ph(0:1000),ca(0:1000),co(0:1000),ARA(0:1000),CAL(0:1000),U(0:1000),W(0:1000)
-           REAL*8  phalf(0:1000),ARAhalf(0:1000),CALhalf(0:1000),cahalf(0:1000),cohalf(0:1000),whalf(0:1000)
+           REAL*8 pho(0:1000),cao(0:1000),coo(0:1000),ARAo(0:1000),CALo(0:1000),ph(0:1000)
+           REAL*8 ca(0:1000),co(0:1000),ARA(0:1000),CAL(0:1000),U(0:1000),W(0:1000)
+           REAL*8 phalf(0:1000),ARAhalf(0:1000),CALhalf(0:1000),cahalf(0:1000)
+           REAL*8 cohalf(0:1000),whalf(0:1000)
            REAL*8 Rca(0:1000),Rco(0:1000),RAR(0:1000),RCAL(0:1000),RARdum(0:1000),RCALdum(0:1000)
-           REAL*8 OC(0:1000),OA(0:1000),t,dt,dx,P(35),dca(0:1000),dco(0:1000),sigca(0:1000),sigco(0:1000)
-           REAL*8 Rp(0:1000),te,wap,S(0:1000),Sdum(0:1000),Udum(0:1000),sigpo(0:1000)
+           REAL*8 OC(0:1000),OA(0:1000),t,dt,dx,P(35),dca(0:1000),dco(0:1000)
+           REAL*8 sigca(0:1000),sigco(0:1000),Rp(0:1000),te,wap,S(0:1000)
+           REAL*8 Sdum(0:1000),Udum(0:1000),sigpo(0:1000)
 
            INTEGER tmax,j,outx,i,N,outt
            COMMON/general/ pho,cao,coo,ARAo,CALo,tmax,outx,outt,N
@@ -120,10 +122,8 @@
            pause
            stop 'marl'
        end program
-!
-!
-!
-!
+
+! ~\~ begin <<lit/index.md|auxf>>[init]
            subroutine auxf(t,n,ph,ca,co,ARA,CAL,U,S,W,OC,OA,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,RAR,RCAL)
 ! This routine calculates all auxiliairy functions: Peclet numbers, oversaturations, reaction rates and others
            implicit none
@@ -458,120 +458,8 @@
            return
            end
 !
-
-           subroutine projectX(n,ARA,CAL,U,S,RAR,RCAL,ARAhalf,CALhalf)
-! This routine calculates the projected solid phase fields at half-time in order to treat the non-linearities
-           real*8 U(0:1000),ARA(0:1000),CAL(0:1000),ARAhalf(0:1000),CALhalf(0:1000)
-           REAL*8 S(0:1000)
-           REAL*8 dt,dx,P(35),a
-           REAL*8 RAR(0:1000),RCAL(0:1000)
-        
-               integer N,i
-           COMMON/par/P
-           dx=P(16)
-           dt=P(15)
-           
-           a=dt/(2*dx)
-        
-           
-       
-             ARAhalf(0)=ARA(0)
-             CALhalf(0)=CAL(0)
-          
-                      
-
-           do 30 i=1,n-1
-         
-           
-             ARAhalf(i)=ARA(i)-a*u(i)*(ARA(i)*S(i)-ARA(i-1)*0.5*(S(i)+1.)+ARA(i+1)*0.5*(1.-S(i)))&
- &              +0.5*dt*RAR(i)
-             CALhalf(i)=CAL(i)-a*u(i)*(CAL(i)*S(i)-CAL(i-1)*0.5*(S(i)+1.)+CAL(i+1)*0.5*(1.-S(i)))&
- &               +0.5*dt*RCAL(i)
-             if(1-ARAhalf(i)-CALhalf(i).lt.1.d-70) ARAhalf(i)=1-CALhalf(i)
-             if(1-CALhalf(i).lt.1.d-10) CALhalf(i)=1.
-             if(1-ARAhalf(i).lt.1.d-10) ARAhalf(i)=1.
-             if(ARAhalf(i).lt.1.d-70) ARAhalf(i)=0.
-             if(CALhalf(i).lt.1.d-70) CALhalf(i)=0.
-        
-30         continue
- 
-             ARAhalf(n)=ARA(n)-a*u(n)*S(n)*(ARA(n)-ARA(n-1))+0.5*dt*RAR(n)
-             CALhalf(n)=CAL(n)-a*u(n)*S(n)*(CAL(n)-CAL(n-1))+0.5*dt*RCAL(n)
-            
-             if(1-ARAhalf(n)-CALhalf(n).lt.1.d-70) ARAhalf(n)=1-CALhalf(n)
-             if(1-CALhalf(n).lt.1.d-10) CALhalf(n)=1.
-             if(1-ARAhalf(n).lt.1.d-10) ARAhalf(n)=1.
-             if(ARAhalf(n).lt.1.d-70) ARAhalf(n)=0.
-             if(CALhalf(n).lt.1.d-70) CALhalf(n)=0.
-         
-           return
-           end
-!
-!
-           SUBROUTINE  projectY(n,ph,ca,co,W,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf,cahalf,cohalf)
-! This routine calculates the projected aqueous phase fields at half-time in order to treat the non-linearities
-           real*8 ph(0:1000),W(0:1000),cahalf(0:1000),cohalf(0:1000),phalf(0:1000),sigpo(0:1000)
-           REAL*8 ca(0:1000),co(0:1000),dca(0:1000),dco(0:1000),sigca(0:1000),sigco(0:1000),Rca(0:1000),Rco(0:1000)
-           REAL*8 dt,dx,P(35),a,b,eps,difpor,Rp(0:1000)
-           integer N,i
-           COMMON/par/P
-           dx=P(16)
-           dt=P(15)
-           eps=P(29)
-           a=dt/(4*dx)
-           b=dt/(4*dx*dx)
-           difpor=P(35)
-          
-           cahalf(0)=ca(0)
-           cohalf(0)=co(0)
-           phalf(0)=ph(0)
-           do 30 i=1,n-1
-             phalf(i)=ph(i)-a*((1-sigpo(i+1))*ph(i+1)*w(i+1)+2*sigpo(i)*ph(i)*w(i)-&
-&          (1+sigpo(i-1))*ph(i-1)*w(i-1))&
-&             +2*b*difpor*(ph(i-1)-2*ph(i)+ph(i+1))+0.5*dt*Rp(i)
-             if(phalf(i).lt.eps) phalf(i)=eps
-             if(1-phalf(i).lt.eps) phalf(i)=1.-eps    
-!               
-             if(ph(i).le.eps) then
-                cahalf(i)=ca(i)-a*w(i)*((1-sigca(i))*ca(i+1)+2*sigca(i)*ca(i)-(1+sigca(i))*ca(i-1)) &
-&             +0.5*dt*Rca(i)
-                cohalf(i)=co(i)-a*w(i)*((1-sigco(i))*co(i+1)+2*sigco(i)*co(i)-(1+sigco(i))*co(i-1)) &
-&             +0.5*dt*Rco(i)
-           else
-            cahalf(i)=ca(i)-a*w(i)*((1-sigca(i))*ca(i+1)+2*sigca(i)*ca(i)-(1+sigca(i))*ca(i-1)) &
-&             +b*(ph(i+1)*dca(i+1)+ph(i)*dca(i))*(ca(i+1)-ca(i))/ph(i) &
-&             -b*(ph(i-1)*dca(i-1)+ph(i)*dca(i))*(ca(i)-ca(i-1))/ph(i)+0.5*dt*Rca(i)
-            cohalf(i)=co(i)-a*w(i)*((1-sigco(i))*co(i+1)+2*sigco(i)*co(i)-(1+sigco(i))*co(i-1)) &
-&             +b*(ph(i+1)*dco(i+1)+ph(i)*dco(i))*(co(i+1)-co(i))/ph(i) &
-&             -b*(ph(i-1)*dco(i-1)+ph(i)*dco(i))*(co(i)-co(i-1))/ph(i)+0.5*dt*Rco(i)
-            endif
-             if(cahalf(i).lt.1.d-15) cahalf(i)=0.
-             if(cohalf(i).lt.1.d-15) cohalf(i)=0.
-             
-          
-30         continue
-              phalf(n)=ph(n)+2*a*(sigpo(n-1)*ph(n-1)*w(n-1)-sigpo(n)*ph(n)*w(n)) &
-&             +4*b*difpor*(ph(n-1)-ph(n))+0.5*dt*Rp(n)
-             if(phalf(n).lt.eps) phalf(n)=eps
-             if(1-phalf(n).lt.eps) phalf(n)=1.-eps    
-!               
-             if (ph(n).le.eps) then
-!          
-                cahalf(n)=ca(n)-2*a*w(n)*sigca(n)*(ca(n)-ca(n-1)) +0.5*dt*Rca(n)
-           cohalf(n)=co(n)-2*a*w(n)*sigco(n)*(co(n)-co(n-1)) +0.5*dt*Rco(n)
-             else  
-           cahalf(n)=ca(n)-2*a*w(n)*sigca(n)*(ca(n)-ca(n-1)) &
-&             +2*b*(ph(n-1)*dca(n-1)+ph(n)*dca(n))*(ca(n-1)-ca(n))/ph(n)+0.5*dt*Rca(n)
-           cohalf(n)=co(n)-2*a*w(n)*sigco(n)*(co(n)-co(n-1)) &
-&             +2*b*(ph(n-1)*dco(n-1)+ph(n)*dco(n))*(co(n-1)-co(n))/ph(n)+0.5*dt*Rco(n)
-             endif
-             if(cahalf(n).lt.1.d-15) cahalf(n)=0.
-             if(cohalf(n).lt.1.d-15) cohalf(n)=0.
- 
-           return
-           end
-!
-
+! ~\~ end
+! ~\~ begin <<lit/index.md|upwind>>[init]
            subroutine upwind(n,ARA,CAL,U,S,RAR,RCAL)
 ! Implementation of the upwind scheme for the advection equations
            real*8 U(0:1000),ARA(0:1000),CAL(0:1000)
@@ -626,8 +514,107 @@
             
            return
            end
-!
-!
+! ~\~ end
+! ~\~ begin <<lit/index.md|project-x>>[init]
+subroutine projectX(n,ARA,CAL,U,S,RAR,RCAL,ARAhalf,CALhalf)
+real*8 U(0:1000),ARA(0:1000),CAL(0:1000),ARAhalf(0:1000),CALhalf(0:1000)
+REAL*8 S(0:1000)
+REAL*8 dt,dx,P(35),a
+REAL*8 RAR(0:1000),RCAL(0:1000)
+
+integer N,i
+COMMON/par/P
+dx=P(16)
+dt=P(15)
+a=dt/(2*dx)
+
+ARAhalf(0)=ARA(0)
+CALhalf(0)=CAL(0)
+do i=1,n-1
+     ARAhalf(i)=ARA(i)-a*u(i)*(ARA(i)*S(i)-ARA(i-1)*0.5*(S(i)+1.)&
+               &+ARA(i+1)*0.5*(1.-S(i)))+0.5*dt*RAR(i)
+     CALhalf(i)=CAL(i)-a*u(i)*(CAL(i)*S(i)-CAL(i-1)*0.5*(S(i)+1.)&
+               &+CAL(i+1)*0.5*(1.-S(i)))+0.5*dt*RCAL(i)
+     ! ~\~ begin <<lit/index.md|project-x-clamp-i>>[init]
+     if(1-ARAhalf(i)-CALhalf(i).lt.1.d-70) ARAhalf(i)=1-CALhalf(i)
+     if(1-CALhalf(i).lt.1.d-10) CALhalf(i)=1.
+     if(1-ARAhalf(i).lt.1.d-10) ARAhalf(i)=1.
+     if(ARAhalf(i).lt.1.d-70) ARAhalf(i)=0.
+     if(CALhalf(i).lt.1.d-70) CALhalf(i)=0.
+     ! ~\~ end
+end do 
+ARAhalf(n)=ARA(n)-a*u(n)*S(n)*(ARA(n)-ARA(n-1))+0.5*dt*RAR(n)
+CALhalf(n)=CAL(n)-a*u(n)*S(n)*(CAL(n)-CAL(n-1))+0.5*dt*RCAL(n)
+! ~\~ begin <<lit/index.md|project-x-clamp-n>>[init]
+if(1-ARAhalf(n)-CALhalf(n).lt.1.d-70) ARAhalf(n)=1-CALhalf(n)
+if(1-CALhalf(n).lt.1.d-10) CALhalf(n)=1.
+if(1-ARAhalf(n).lt.1.d-10) ARAhalf(n)=1.
+if(ARAhalf(n).lt.1.d-70) ARAhalf(n)=0.
+if(CALhalf(n).lt.1.d-70) CALhalf(n)=0.
+! ~\~ end
+return
+end
+! ~\~ end
+! ~\~ begin <<lit/index.md|project-y>>[init]
+SUBROUTINE  projectY(n,ph,ca,co,W,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf,cahalf,cohalf)
+    real*8 ph(0:1000),W(0:1000),cahalf(0:1000),cohalf(0:1000),phalf(0:1000),sigpo(0:1000)
+    REAL*8 ca(0:1000),co(0:1000),dca(0:1000),dco(0:1000),sigca(0:1000),sigco(0:1000),Rca(0:1000),Rco(0:1000)
+    REAL*8 dt,dx,P(35),a,b,eps,difpor,Rp(0:1000)
+    integer N,i
+    COMMON/par/P
+    dx=P(16)
+    dt=P(15)
+    eps=P(29)
+    a=dt/(4*dx)
+    b=dt/(4*dx*dx)
+    difpor=P(35)
+    
+    cahalf(0)=ca(0)
+    cohalf(0)=co(0)
+    phalf(0)=ph(0)
+    do i=1,n-1
+        phalf(i)=ph(i)-a*((1-sigpo(i+1))*ph(i+1)*w(i+1)+2*sigpo(i)*ph(i)*w(i)-&
+                &(1+sigpo(i-1))*ph(i-1)*w(i-1))&
+                &+2*b*difpor*(ph(i-1)-2*ph(i)+ph(i+1))+0.5*dt*Rp(i)
+        if(phalf(i).lt.eps) phalf(i)=eps
+        if(1-phalf(i).lt.eps) phalf(i)=1.-eps    
+         
+        if(ph(i).le.eps) then
+            cahalf(i)=ca(i)-a*w(i)*((1-sigca(i))*ca(i+1)+2*sigca(i)*ca(i)-(1+sigca(i))*ca(i-1)) &
+                     &+0.5*dt*Rca(i)
+            cohalf(i)=co(i)-a*w(i)*((1-sigco(i))*co(i+1)+2*sigco(i)*co(i)-(1+sigco(i))*co(i-1)) &
+                     &+0.5*dt*Rco(i)
+        else
+            cahalf(i)=ca(i)-a*w(i)*((1-sigca(i))*ca(i+1)+2*sigca(i)*ca(i)-(1+sigca(i))*ca(i-1)) &
+                     &+b*(ph(i+1)*dca(i+1)+ph(i)*dca(i))*(ca(i+1)-ca(i))/ph(i) &
+                     &-b*(ph(i-1)*dca(i-1)+ph(i)*dca(i))*(ca(i)-ca(i-1))/ph(i)+0.5*dt*Rca(i)
+            cohalf(i)=co(i)-a*w(i)*((1-sigco(i))*co(i+1)+2*sigco(i)*co(i)-(1+sigco(i))*co(i-1)) &
+                     &+b*(ph(i+1)*dco(i+1)+ph(i)*dco(i))*(co(i+1)-co(i))/ph(i) &
+                     &-b*(ph(i-1)*dco(i-1)+ph(i)*dco(i))*(co(i)-co(i-1))/ph(i)+0.5*dt*Rco(i)
+        endif
+        if(cahalf(i).lt.1.d-15) cahalf(i)=0.
+        if(cohalf(i).lt.1.d-15) cohalf(i)=0.
+    end do
+
+    phalf(n)=ph(n)+2*a*(sigpo(n-1)*ph(n-1)*w(n-1)-sigpo(n)*ph(n)*w(n)) &
+            &+4*b*difpor*(ph(n-1)-ph(n))+0.5*dt*Rp(n)
+    if(phalf(n).lt.eps) phalf(n)=eps
+    if(1-phalf(n).lt.eps) phalf(n)=1.-eps    
+    if (ph(n).le.eps) then
+        cahalf(n)=ca(n)-2*a*w(n)*sigca(n)*(ca(n)-ca(n-1)) +0.5*dt*Rca(n)
+        cohalf(n)=co(n)-2*a*w(n)*sigco(n)*(co(n)-co(n-1)) +0.5*dt*Rco(n)
+    else  
+        cahalf(n)=ca(n)-2*a*w(n)*sigca(n)*(ca(n)-ca(n-1)) &
+                 &+2*b*(ph(n-1)*dca(n-1)+ph(n)*dca(n))*(ca(n-1)-ca(n))/ph(n)+0.5*dt*Rca(n)
+        cohalf(n)=co(n)-2*a*w(n)*sigco(n)*(co(n)-co(n-1)) &
+                 &+2*b*(ph(n-1)*dco(n-1)+ph(n)*dco(n))*(co(n-1)-co(n))/ph(n)+0.5*dt*Rco(n)
+    endif
+    if(cahalf(n).lt.1.d-15) cahalf(n)=0.
+    if(cohalf(n).lt.1.d-15) cohalf(n)=0.
+    return
+end
+! ~\~ end
+! ~\~ begin <<lit/index.md|crank-nicolson>>[init]
            subroutine CRANK(t,n,ph,ca,co,Whalf,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf)
 ! implementation of the Crank-Nicholson scheme for the advection-diffusion equations: X(n+1)=(A^-1).B.X(n)
            real*8 ph(0:1000),ca(0:1000),co(0:1000),Whalf(0:1000),sigpo(0:1000),phalf(0:1000)
@@ -808,10 +795,8 @@
 11       sol(i)=sol(i-1)*g(i-1)+h(i-1)
        return
           end
-
-
-!
-!
+! ~\~ end
+! ~\~ begin <<lit/index.md|init>>[init]
        subroutine init
 ! This routine defines all parameter values and initial conditions, to be passed in vector P.
            implicit none
@@ -1001,4 +986,5 @@
            PAUSE
        return
        end
+! ~\~ end
 ! ~\~ end

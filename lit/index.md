@@ -8,12 +8,14 @@ author: Johan Hidding
 The `COMMON` blocks in fortran create a kind of global variables. Here they're used to store the free parameters of the model. The array `P(35)` is used to store all input parameters and are used throughout.
 
 ``` {.fortran #main-declare-variables}
-REAL*8 pho(0:1000),cao(0:1000),coo(0:1000),ARAo(0:1000),CALo(0:1000)
-REAL*8  ph(0:1000),ca(0:1000),co(0:1000),ARA(0:1000),CAL(0:1000),U(0:1000),W(0:1000)
-REAL*8  phalf(0:1000),ARAhalf(0:1000),CALhalf(0:1000),cahalf(0:1000),cohalf(0:1000),whalf(0:1000)
+REAL*8 pho(0:1000),cao(0:1000),coo(0:1000),ARAo(0:1000),CALo(0:1000),ph(0:1000)
+REAL*8 ca(0:1000),co(0:1000),ARA(0:1000),CAL(0:1000),U(0:1000),W(0:1000)
+REAL*8 phalf(0:1000),ARAhalf(0:1000),CALhalf(0:1000),cahalf(0:1000)
+REAL*8 cohalf(0:1000),whalf(0:1000)
 REAL*8 Rca(0:1000),Rco(0:1000),RAR(0:1000),RCAL(0:1000),RARdum(0:1000),RCALdum(0:1000)
-REAL*8 OC(0:1000),OA(0:1000),t,dt,dx,P(35),dca(0:1000),dco(0:1000),sigca(0:1000),sigco(0:1000)
-REAL*8 Rp(0:1000),te,wap,S(0:1000),Sdum(0:1000),Udum(0:1000),sigpo(0:1000)
+REAL*8 OC(0:1000),OA(0:1000),t,dt,dx,P(35),dca(0:1000),dco(0:1000)
+REAL*8 sigca(0:1000),sigco(0:1000),Rp(0:1000),te,wap,S(0:1000)
+REAL*8 Sdum(0:1000),Udum(0:1000),sigpo(0:1000)
 
 INTEGER tmax,j,outx,i,N,outt
 COMMON/general/ pho,cao,coo,ARAo,CALo,tmax,outx,outt,N
@@ -23,13 +25,46 @@ COMMON/par/P
 ## Parameters `P(35)`
 
 ::: {.table}
-| Number | Symbol | Remarks |
-| --- | --- | --- |
-| 15  | $\Delta t$ | time step |
-| 16  | $\Delta x$ | grid resolution |
+| Number | Symbol             | Remarks                                                                 |
+| ---:   | ---                | ---                                                                     |
+| 1      | $m$                |                                                                         |
+| 2      | $n$                |                                                                         |
+| 3      | $\lambda$          | $k_3 / k_2$                                                             |
+| 4      | $\nu_1$            | $k_1 / k_2$                                                             |
+| 5      | $d_{\rm Ar}$       |                                                                         |
+| 6      | $\delta$           |                                                                         |
+| 7      |                    | $\rho_s c_{\rm Cal}^0 / \rho_c$, or $c^0_{\rm Cal}$                      |
+| 8      | $\phi_0$           |                                                                         |
+| 9      |                    | $1 - \rho_t / \rho_c$ or $0$                                            |
+| 10     |                    | $1 - \rho_t / \rho_a$ or $0$                                            |
+| 11     |                    | $\rho_t / \rho_w$ or $\rho_s^0 / \rho_w$                                |
+| 12     |                    | $\rho_c / \rho_w$ or $\rho_s^0 / \rho_w$                                |
+| 13     |                    | $\rho_s^0/\rho_w - 1$                                                   |
+| 14     | $T_h$              | Something set to 100                                                    |
+| 15     | $\Delta t$         |                                                                         |
+| 16     | $\Delta x$         |                                                                         |
+| 17     |                    | $1 - C_A^0 - C_C^0$                                                     |
+| 18     | $C_A^0$            |                                                                         |
+| 19     | $C_C^0$            |                                                                         |
+| 20     |                    | $\rho_s^0 / \rho_w$                                                     |
+| 21     |                    | $a / X^*$                                                               |
+| 22     |                    | $x_d / X^*$                                                             |
+| 23     |                    | $S / V_{\rm scale}$                                                     |
+| 24     |                    | $K_C / K_A$                                                             |
+| 25     |                    | $D^0_{\rm CO3} / D^0_{\rm Ca}$                                          |
+| 26     |                    | $k_2 T^*$                                                               |
+| 27     |                    | $\rho_c / \rho_a$ or $1$                                                |
+| 28     |                    | $b / X^*$                                                               |
+| 29     | $\epsilon$         | Some small number                                                       |
+| 30     |                    | `xcem/Xs`???                                                            |
+| 31     |                    | `xcemf/Xs`???                                                           |
+| 32     |                    | $\beta / V_{\rm scale}$                                                 |
+| 33     |                    | $1/(c_{\rm Athy}X^*)$                                                   |
+| 34     | $\phi_{\infty}$    |                                                                         |
+| 35     | ${\rm difpor}$     | $\beta \phi_0^3 / ((\phi_0 - \phi_{\infty})c_{\rm Athy}D^0_{\rm Ca})$   |
 :::
 
-``` {.fortran #main-open-output-files}
+``` {.fortran .hide #main-open-output-files}
 OPEN(8,file='amarlt1')
 OPEN(9,FILE='amarlt2')
 OPEN(10,FILE='amarlt3')
@@ -38,7 +73,7 @@ OPEN(12,FILE='amarlx')
 OPEN(13,FILE='marlstuff')
 ```
 
-``` {.fortran #main-initialize}
+``` {.fortran .hide #main-initialize}
 call init
 dt=P(15)
 dx=P(16)
@@ -69,6 +104,7 @@ call auxf(t,n,ph,ca,co,ARA,CAL,U,S,W,OC,OA,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,
 write (12,100) t,P(18),P(18),P(18),P(18),P(19),P(19),P(19),P(19),P(8),P(8),P(8),P(8),ca(N/4),ca(N/2),ca(3*N/4),ca(N),co(N/4),co(N/2),co(3*N/4),co(N),U(N/4),W(N/4)
 ```
 
+## Integration
 ``` {.fortran #time-integration}
 call projectX(n,ARA,CAL,U,S,RAR,RCAL,ARAhalf,CALhalf)
 call projectY(n,ph,ca,co,W,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf,cahalf,cohalf)
@@ -84,6 +120,8 @@ do j=1,tmax
     call projectY(n,ph,ca,co,W,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf,cahalf,cohalf)
 end do
 ```
+
+Notice, the first call to `auxf` we use all the `/.*half/` entities. Information is written to several dummy variables that are not used and `Whalf`, `dca`, and `dco`, the signs and the reaction terms. The second call to `auxf` (after Crank-Nicolson and Upwind integration), the true parameters are updated. 
 
 ``` {.fortran .hide #log-progress}
 IF(j/50000 *50000.eq.j) WRITE(6,*) 'doing t=',j*dt
@@ -155,10 +193,18 @@ endif
            pause
            stop 'marl'
        end program
-!
-!
-!
-!
+
+<<auxf>>
+<<upwind>>
+<<project-x>>
+<<project-y>>
+<<crank-nicolson>>
+<<init>>
+```
+
+# Auxiliary functions
+
+``` {.fortran #auxf}
            subroutine auxf(t,n,ph,ca,co,ARA,CAL,U,S,W,OC,OA,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,RAR,RCAL)
 ! This routine calculates all auxiliairy functions: Peclet numbers, oversaturations, reaction rates and others
            implicit none
@@ -493,120 +539,140 @@ endif
            return
            end
 !
+```
 
-           subroutine projectX(n,ARA,CAL,U,S,RAR,RCAL,ARAhalf,CALhalf)
-! This routine calculates the projected solid phase fields at half-time in order to treat the non-linearities
-           real*8 U(0:1000),ARA(0:1000),CAL(0:1000),ARAhalf(0:1000),CALhalf(0:1000)
-           REAL*8 S(0:1000)
-           REAL*8 dt,dx,P(35),a
-           REAL*8 RAR(0:1000),RCAL(0:1000)
-        
-               integer N,i
-           COMMON/par/P
-           dx=P(16)
-           dt=P(15)
-           
-           a=dt/(2*dx)
-        
-           
-       
-             ARAhalf(0)=ARA(0)
-             CALhalf(0)=CAL(0)
-          
-                      
+# Advanced projection method
+This routine calculates the projected solid phase fields at half-time in order to treat the non-linearities. This routine writes to `ARAhalf` and `CALhalf` variables. These are only used to compute the `cahalf`, `cohalf`, and `phalf` (corresponding to $\phi$) later on.
 
-           do 30 i=1,n-1
+Let $a = \Delta t / 2\Delta x$ be a prefactor, then for species $k = {\rm Ara}, {\rm Cal}$ compute the following,
+
+$$k_{i + 1/2} = k_i - a u_i (k_i S_i - k_{i-1} {1 \over 2} (S_i + 1) + k_{i+1} {1 \over 2} (1 - S_i)) + {{\Delta t R^{k}_i} \over 2},$$
+
+where $S_i$ is the sign of $u_i$. This corresponds to an upwind scheme, basically evaluating Equations 40 and 41 from the paper at half-time.
+
+``` {.fortran #project-x}
+subroutine projectX(n,ARA,CAL,U,S,RAR,RCAL,ARAhalf,CALhalf)
+real*8 U(0:1000),ARA(0:1000),CAL(0:1000),ARAhalf(0:1000),CALhalf(0:1000)
+REAL*8 S(0:1000)
+REAL*8 dt,dx,P(35),a
+REAL*8 RAR(0:1000),RCAL(0:1000)
+
+integer N,i
+COMMON/par/P
+dx=P(16)
+dt=P(15)
+a=dt/(2*dx)
+
+ARAhalf(0)=ARA(0)
+CALhalf(0)=CAL(0)
+do i=1,n-1
+     ARAhalf(i)=ARA(i)-a*u(i)*(ARA(i)*S(i)-ARA(i-1)*0.5*(S(i)+1.)&
+               &+ARA(i+1)*0.5*(1.-S(i)))+0.5*dt*RAR(i)
+     CALhalf(i)=CAL(i)-a*u(i)*(CAL(i)*S(i)-CAL(i-1)*0.5*(S(i)+1.)&
+               &+CAL(i+1)*0.5*(1.-S(i)))+0.5*dt*RCAL(i)
+     <<project-x-clamp-i>>
+end do 
+ARAhalf(n)=ARA(n)-a*u(n)*S(n)*(ARA(n)-ARA(n-1))+0.5*dt*RAR(n)
+CALhalf(n)=CAL(n)-a*u(n)*S(n)*(CAL(n)-CAL(n-1))+0.5*dt*RCAL(n)
+<<project-x-clamp-n>>
+return
+end
+```
+
+In this routine, the output is clamped to values between 0 and 1.
+
+``` {.fortran #project-x-clamp-i}
+if(1-ARAhalf(i)-CALhalf(i).lt.1.d-70) ARAhalf(i)=1-CALhalf(i)
+if(1-CALhalf(i).lt.1.d-10) CALhalf(i)=1.
+if(1-ARAhalf(i).lt.1.d-10) ARAhalf(i)=1.
+if(ARAhalf(i).lt.1.d-70) ARAhalf(i)=0.
+if(CALhalf(i).lt.1.d-70) CALhalf(i)=0.
+```
+
+The last time is the same, just on index `n`.
+
+``` {.fortran .hide #project-x-clamp-n}
+if(1-ARAhalf(n)-CALhalf(n).lt.1.d-70) ARAhalf(n)=1-CALhalf(n)
+if(1-CALhalf(n).lt.1.d-10) CALhalf(n)=1.
+if(1-ARAhalf(n).lt.1.d-10) ARAhalf(n)=1.
+if(ARAhalf(n).lt.1.d-70) ARAhalf(n)=0.
+if(CALhalf(n).lt.1.d-70) CALhalf(n)=0.
+```
+
+The next routine calculates the projected aqueous phase fields at half-time in order to treat the non-linearities. This uses an upwind scheme for the advection and forward Euler for the diffusion part. I wonder how this affects the stability of the algorithm. Values of $\phi_{i+1/2}$ are again clamped to the open interval $(0, 1)$, staying a margin $\epsilon$ away from either 1 or 0 to avoid divisions by zero elsewhere in the code.
+
+If $\phi_i \le \epsilon$, the diffusion term in evaluating $\partial_t \hat{c}_k$ is dropped. Otherwise, we are looking at upwind for the advection part. The double derivative part:
+
+$$\begin{align}
+k_{i+1/2} &= k_i - a w_i ((1-{\rm sig}k_i) k_{i+1} + 2({\rm sig}k_i)k_i - (1+{\rm sig} k_i)k_{i-1})\\
+          &+ {b \over \phi_i}(\phi_{i+1} d^k_{i+1} + \phi{i} d^k_{i})(k_{i+1} - k_{i})
+           - {b \over \phi_i}(\phi_{i-1} d^k_{i-1} + \phi{i} d^k_{i})(k_{i} - k_{i-1})\\
+          &+ {\Delta t \over 2} R^k_{i}.
+\end{align}$$
+
+``` {.fortran #project-y}
+SUBROUTINE  projectY(n,ph,ca,co,W,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf,cahalf,cohalf)
+    real*8 ph(0:1000),W(0:1000),cahalf(0:1000),cohalf(0:1000),phalf(0:1000),sigpo(0:1000)
+    REAL*8 ca(0:1000),co(0:1000),dca(0:1000),dco(0:1000),sigca(0:1000),sigco(0:1000),Rca(0:1000),Rco(0:1000)
+    REAL*8 dt,dx,P(35),a,b,eps,difpor,Rp(0:1000)
+    integer N,i
+    COMMON/par/P
+    dx=P(16)
+    dt=P(15)
+    eps=P(29)
+    a=dt/(4*dx)
+    b=dt/(4*dx*dx)
+    difpor=P(35)
+    
+    cahalf(0)=ca(0)
+    cohalf(0)=co(0)
+    phalf(0)=ph(0)
+    do i=1,n-1
+        phalf(i)=ph(i)-a*((1-sigpo(i+1))*ph(i+1)*w(i+1)+2*sigpo(i)*ph(i)*w(i)-&
+                &(1+sigpo(i-1))*ph(i-1)*w(i-1))&
+                &+2*b*difpor*(ph(i-1)-2*ph(i)+ph(i+1))+0.5*dt*Rp(i)
+        if(phalf(i).lt.eps) phalf(i)=eps
+        if(1-phalf(i).lt.eps) phalf(i)=1.-eps    
          
-           
-             ARAhalf(i)=ARA(i)-a*u(i)*(ARA(i)*S(i)-ARA(i-1)*0.5*(S(i)+1.)+ARA(i+1)*0.5*(1.-S(i)))&
- &              +0.5*dt*RAR(i)
-             CALhalf(i)=CAL(i)-a*u(i)*(CAL(i)*S(i)-CAL(i-1)*0.5*(S(i)+1.)+CAL(i+1)*0.5*(1.-S(i)))&
- &               +0.5*dt*RCAL(i)
-             if(1-ARAhalf(i)-CALhalf(i).lt.1.d-70) ARAhalf(i)=1-CALhalf(i)
-             if(1-CALhalf(i).lt.1.d-10) CALhalf(i)=1.
-             if(1-ARAhalf(i).lt.1.d-10) ARAhalf(i)=1.
-             if(ARAhalf(i).lt.1.d-70) ARAhalf(i)=0.
-             if(CALhalf(i).lt.1.d-70) CALhalf(i)=0.
-        
-30         continue
- 
-             ARAhalf(n)=ARA(n)-a*u(n)*S(n)*(ARA(n)-ARA(n-1))+0.5*dt*RAR(n)
-             CALhalf(n)=CAL(n)-a*u(n)*S(n)*(CAL(n)-CAL(n-1))+0.5*dt*RCAL(n)
-            
-             if(1-ARAhalf(n)-CALhalf(n).lt.1.d-70) ARAhalf(n)=1-CALhalf(n)
-             if(1-CALhalf(n).lt.1.d-10) CALhalf(n)=1.
-             if(1-ARAhalf(n).lt.1.d-10) ARAhalf(n)=1.
-             if(ARAhalf(n).lt.1.d-70) ARAhalf(n)=0.
-             if(CALhalf(n).lt.1.d-70) CALhalf(n)=0.
-         
-           return
-           end
-!
-!
-           SUBROUTINE  projectY(n,ph,ca,co,W,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf,cahalf,cohalf)
-! This routine calculates the projected aqueous phase fields at half-time in order to treat the non-linearities
-           real*8 ph(0:1000),W(0:1000),cahalf(0:1000),cohalf(0:1000),phalf(0:1000),sigpo(0:1000)
-           REAL*8 ca(0:1000),co(0:1000),dca(0:1000),dco(0:1000),sigca(0:1000),sigco(0:1000),Rca(0:1000),Rco(0:1000)
-           REAL*8 dt,dx,P(35),a,b,eps,difpor,Rp(0:1000)
-           integer N,i
-           COMMON/par/P
-           dx=P(16)
-           dt=P(15)
-           eps=P(29)
-           a=dt/(4*dx)
-           b=dt/(4*dx*dx)
-           difpor=P(35)
-          
-           cahalf(0)=ca(0)
-           cohalf(0)=co(0)
-           phalf(0)=ph(0)
-           do 30 i=1,n-1
-             phalf(i)=ph(i)-a*((1-sigpo(i+1))*ph(i+1)*w(i+1)+2*sigpo(i)*ph(i)*w(i)-&
-&          (1+sigpo(i-1))*ph(i-1)*w(i-1))&
-&             +2*b*difpor*(ph(i-1)-2*ph(i)+ph(i+1))+0.5*dt*Rp(i)
-             if(phalf(i).lt.eps) phalf(i)=eps
-             if(1-phalf(i).lt.eps) phalf(i)=1.-eps    
-!               
-             if(ph(i).le.eps) then
-                cahalf(i)=ca(i)-a*w(i)*((1-sigca(i))*ca(i+1)+2*sigca(i)*ca(i)-(1+sigca(i))*ca(i-1)) &
-&             +0.5*dt*Rca(i)
-                cohalf(i)=co(i)-a*w(i)*((1-sigco(i))*co(i+1)+2*sigco(i)*co(i)-(1+sigco(i))*co(i-1)) &
-&             +0.5*dt*Rco(i)
-           else
+        if(ph(i).le.eps) then
             cahalf(i)=ca(i)-a*w(i)*((1-sigca(i))*ca(i+1)+2*sigca(i)*ca(i)-(1+sigca(i))*ca(i-1)) &
-&             +b*(ph(i+1)*dca(i+1)+ph(i)*dca(i))*(ca(i+1)-ca(i))/ph(i) &
-&             -b*(ph(i-1)*dca(i-1)+ph(i)*dca(i))*(ca(i)-ca(i-1))/ph(i)+0.5*dt*Rca(i)
+                     &+0.5*dt*Rca(i)
             cohalf(i)=co(i)-a*w(i)*((1-sigco(i))*co(i+1)+2*sigco(i)*co(i)-(1+sigco(i))*co(i-1)) &
-&             +b*(ph(i+1)*dco(i+1)+ph(i)*dco(i))*(co(i+1)-co(i))/ph(i) &
-&             -b*(ph(i-1)*dco(i-1)+ph(i)*dco(i))*(co(i)-co(i-1))/ph(i)+0.5*dt*Rco(i)
-            endif
-             if(cahalf(i).lt.1.d-15) cahalf(i)=0.
-             if(cohalf(i).lt.1.d-15) cohalf(i)=0.
-             
-          
-30         continue
-              phalf(n)=ph(n)+2*a*(sigpo(n-1)*ph(n-1)*w(n-1)-sigpo(n)*ph(n)*w(n)) &
-&             +4*b*difpor*(ph(n-1)-ph(n))+0.5*dt*Rp(n)
-             if(phalf(n).lt.eps) phalf(n)=eps
-             if(1-phalf(n).lt.eps) phalf(n)=1.-eps    
-!               
-             if (ph(n).le.eps) then
-!          
-                cahalf(n)=ca(n)-2*a*w(n)*sigca(n)*(ca(n)-ca(n-1)) +0.5*dt*Rca(n)
-           cohalf(n)=co(n)-2*a*w(n)*sigco(n)*(co(n)-co(n-1)) +0.5*dt*Rco(n)
-             else  
-           cahalf(n)=ca(n)-2*a*w(n)*sigca(n)*(ca(n)-ca(n-1)) &
-&             +2*b*(ph(n-1)*dca(n-1)+ph(n)*dca(n))*(ca(n-1)-ca(n))/ph(n)+0.5*dt*Rca(n)
-           cohalf(n)=co(n)-2*a*w(n)*sigco(n)*(co(n)-co(n-1)) &
-&             +2*b*(ph(n-1)*dco(n-1)+ph(n)*dco(n))*(co(n-1)-co(n))/ph(n)+0.5*dt*Rco(n)
-             endif
-             if(cahalf(n).lt.1.d-15) cahalf(n)=0.
-             if(cohalf(n).lt.1.d-15) cohalf(n)=0.
- 
-           return
-           end
-!
+                     &+0.5*dt*Rco(i)
+        else
+            cahalf(i)=ca(i)-a*w(i)*((1-sigca(i))*ca(i+1)+2*sigca(i)*ca(i)-(1+sigca(i))*ca(i-1)) &
+                     &+b*(ph(i+1)*dca(i+1)+ph(i)*dca(i))*(ca(i+1)-ca(i))/ph(i) &
+                     &-b*(ph(i-1)*dca(i-1)+ph(i)*dca(i))*(ca(i)-ca(i-1))/ph(i)+0.5*dt*Rca(i)
+            cohalf(i)=co(i)-a*w(i)*((1-sigco(i))*co(i+1)+2*sigco(i)*co(i)-(1+sigco(i))*co(i-1)) &
+                     &+b*(ph(i+1)*dco(i+1)+ph(i)*dco(i))*(co(i+1)-co(i))/ph(i) &
+                     &-b*(ph(i-1)*dco(i-1)+ph(i)*dco(i))*(co(i)-co(i-1))/ph(i)+0.5*dt*Rco(i)
+        endif
+        if(cahalf(i).lt.1.d-15) cahalf(i)=0.
+        if(cohalf(i).lt.1.d-15) cohalf(i)=0.
+    end do
 
+    phalf(n)=ph(n)+2*a*(sigpo(n-1)*ph(n-1)*w(n-1)-sigpo(n)*ph(n)*w(n)) &
+            &+4*b*difpor*(ph(n-1)-ph(n))+0.5*dt*Rp(n)
+    if(phalf(n).lt.eps) phalf(n)=eps
+    if(1-phalf(n).lt.eps) phalf(n)=1.-eps    
+    if (ph(n).le.eps) then
+        cahalf(n)=ca(n)-2*a*w(n)*sigca(n)*(ca(n)-ca(n-1)) +0.5*dt*Rca(n)
+        cohalf(n)=co(n)-2*a*w(n)*sigco(n)*(co(n)-co(n-1)) +0.5*dt*Rco(n)
+    else  
+        cahalf(n)=ca(n)-2*a*w(n)*sigca(n)*(ca(n)-ca(n-1)) &
+                 &+2*b*(ph(n-1)*dca(n-1)+ph(n)*dca(n))*(ca(n-1)-ca(n))/ph(n)+0.5*dt*Rca(n)
+        cohalf(n)=co(n)-2*a*w(n)*sigco(n)*(co(n)-co(n-1)) &
+                 &+2*b*(ph(n-1)*dco(n-1)+ph(n)*dco(n))*(co(n-1)-co(n))/ph(n)+0.5*dt*Rco(n)
+    endif
+    if(cahalf(n).lt.1.d-15) cahalf(n)=0.
+    if(cohalf(n).lt.1.d-15) cohalf(n)=0.
+    return
+end
+```
+
+# Upwind scheme
+
+``` {.fortran #upwind}
            subroutine upwind(n,ARA,CAL,U,S,RAR,RCAL)
 ! Implementation of the upwind scheme for the advection equations
            real*8 U(0:1000),ARA(0:1000),CAL(0:1000)
@@ -661,8 +727,10 @@ endif
             
            return
            end
-!
-!
+```
+
+# Crank-Nicolson
+``` {.fortran #crank-nicolson}
            subroutine CRANK(t,n,ph,ca,co,Whalf,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf)
 ! implementation of the Crank-Nicholson scheme for the advection-diffusion equations: X(n+1)=(A^-1).B.X(n)
            real*8 ph(0:1000),ca(0:1000),co(0:1000),Whalf(0:1000),sigpo(0:1000),phalf(0:1000)
@@ -843,10 +911,11 @@ endif
 11       sol(i)=sol(i-1)*g(i-1)+h(i-1)
        return
           end
+```
 
+# Initialisation
 
-!
-!
+``` {.fortran #init}
        subroutine init
 ! This routine defines all parameter values and initial conditions, to be passed in vector P.
            implicit none
