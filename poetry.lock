@@ -1,0 +1,24 @@
+[[package]]
+name = "argh"
+version = "0.26.2"
+description = "An unobtrusive argparse wrapper with natural syntax"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "numpy"
+version = "1.23.4"
+description = "NumPy is the fundamental package for array computing with Python."
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[metadata]
+lock-version = "1.1"
+python-versions = "^3.10.0"
+content-hash = "133895956264c9f9d8665fdfc5aa1d6e11db2ae5be60cb05a6f4d89898dd362b"
+
+[metadata.files]
+argh = []
+numpy = []

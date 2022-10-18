@@ -3,3 +3,4 @@ build
 *.mod
 amarl*
 marlstuff
+__pycache__
