@@ -1,0 +1,37 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Diagenetic Limestone-Marl model in Fortran
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file, in addition to the paper
+  by L'Heureux 2018.
+type: software
+authors:
+  - given-names: Ivan
+    family-names: L'Heureux
+    affiliation: University of Ottawa
+    orcid: 'https://orcid.org/0000-0003-3424-7872'
+  - given-names: Johan
+    family-names: Hidding
+    email: j.hidding@esciencecenter.nl
+    affiliation: Netherlands eScience Center
+    orcid: 'https://orcid.org/0000-0002-7550-1796'
+identifiers:
+  - type: doi
+    value: 10.1155/2018/4968315
+    description: >-
+      Original paper by L'Heureux presenting the
+      model and results.
+repository-code: 'https://github.com/astro-turing/lheureux'
+abstract: >-
+  This is the Fortran code that was used by Ivan
+  L'Heureux to publish a paper in 2018 on the
+  diagenetic modelling of limestone-marl.
+keywords:
+  - diagenitic model
+  - numerical methods
+  - fiadeiro-veronis
+  - fortran
+license: Apache-2.0
