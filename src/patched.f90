@@ -1,5 +1,5 @@
-! ~\~ language=Fortran filename=src/decomposed.f
-! ~\~ begin <<lit/index.md|src/decomposed.f>>[init]
+! ~\~ language=Fortran filename=src/patched.f90
+! ~\~ begin <<lit/index.md|src/patched.f90>>[init]
 !     Last change:  IL   19 Mar 2014    5:25 pm
 
 !  Rythmite limestone/marl - semiimplicit diffusion on c,po and explicit advection on M with upwind scheme
@@ -119,7 +119,6 @@
            CLOSE(12)
            CLOSE(13)
            write (6,*) 'fini'
-           pause
            stop 'marl'
        end program
 
@@ -164,12 +163,12 @@
                     w(0)=u(0)-k(0)*(rhosw0-1)/ph(0)
  !                   w(0)=u(0)-k(0)*(rhosw0-1)/ph(0)*(1+dpdx*P(33)/(ph(0)-P(34)))
  !                   
- 
+
  !                                    
                 OA(0)=0.
                  sa=1-ca(0)*co(0)*P(24)
                  sc=ca(0)*co(0)-1.
-              
+
 !                 F=dexp(-(xpeak)**2/(2*xwidth**2))
                 F=1.d0
                 IF( (0.gt.idis).and. (0.lt.idisf)) then                         
@@ -266,8 +265,8 @@
                 OA(i)=0.
                 sa=1-ca(i)*co(i)*P(24)
                  sc=ca(i)*co(i)-1
- 
-               
+
+
                 IF( (i.gt.idis).and. (i.lt.idisf)) then        
                    if (sa.gt.0.) then
                          OA(i)=F*sa**P(1)
@@ -320,26 +319,26 @@
 ! velocity
           if ((1-ph(i)).le.0.05)  then
 !          write(6,*) 'p>0.95 for t,i',t,i                 
-                        
+
  ! k *(1-p) actually                          
                            k(i)=betasV*10.*ph(i)**2
                            u(i)=k(i)*(rhosw0-1)+P(23)-P(13)*k(0)
- 
-                           
+
+
  !  approx u(i)=S                          
  !                          u(i)=P(23)
                            w(i)=u(i)-k(i)*(rhosw0-1)/ph(i)
  !                          w(i)=u(i)-k(i)*(rhosw0-1)/ph(i)*(1+dpdx*P(33)/(ph(i)-P(34)))
  !
-    
+
   !                        
  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                          
-                          
+
                            dca(i)=1./(1-2*dlog(ph(i)))
                            dco(i)=dca(i)*P(25)
            Rca(i)=P(26)*(P(6)/P(7)-ca(i))*(OA(i)*ARA(i)-P(3)*OC(i)*CAL(i))*(1-ph(i))/ph(i) 
            Rco(i)=P(26)*(P(6)/P(7)-co(i))*(OA(i)*ARA(i)-P(3)*OC(i)*CAL(i))*(1-ph(i))/ph(i) 
-                             
+
                       Pe1=w(i)*P(16)/(2*dca(i))
                       Pe2=w(i)*P(16)/(2*dco(i))
                       Pe3=w(i)*P(16)/(2*P(35))
@@ -358,10 +357,10 @@
                       else
                          sigpo(i)=(1.+dexp(2*Pe3))/(-1.+dexp(2*Pe3))-1./Pe3 
                       endif            
-             
+
           else
-                     
-                   
+
+
                      if (ph(i).le.P(34)) THEN
  !                write(6,*) 'phi = eps at i, t=',ph(i),i,t
  !                pause
@@ -371,16 +370,16 @@
                        Rca(i)=0.
                        Rco(i)=0.
                        u(i)=k(i)*(rhosw0-1)+P(23)-P(13)*k(0)
-                       
+
  ! approx  u(i)=S       
   !                     u(i)=P(23)             
                        w(i)=u(i)
  !!!!!!!!!!!!!!!!!!                      
-                     
+
                        if(w(i).gt.0.) then
                           sigca(i)=1.
                           sigco(i)=1.
-               
+
                        else  
                           sigca(i)=-1.
                           sigco(i)=-1.
@@ -400,19 +399,19 @@
            Rca(i)=P(26)*(P(6)/P(7)-ca(i))*(OA(i)*ARA(i)-P(3)*OC(i)*CAL(i))*(1-ph(i))/ph(i) 
            Rco(i)=P(26)*(P(6)/P(7)-co(i))*(OA(i)*ARA(i)-P(3)*OC(i)*CAL(i))*(1-ph(i))/ph(i) 
  !          write(13,*)i,Rca(i),Rco(i)
-           
+
 !  velocity u,w
                               u(i)=k(i)*(rhosw0-1)+P(23)-P(13)*k(0)
                       w(i)=u(i)-k(i)*(rhosw0-1)/ph(i)
 !  approx  u(i)=S               
  !                     u(i)=P(23)     
 
-                      
+
                       w(i)=P(23)-k(i)*(rhosw0-1)/ph(i)
 !                       w(i)=u(i)-k(i)*(rhosw0-1)/ph(i)*(1+dpdx*P(33)/(ph(i)-P(34)))
   !                    
-                              
-                   
+
+
  !!!!!!!!!!!!!!!!!!!!                     
                       Pe1=w(i)*P(16)/(2*dca(i))
                       Pe2=w(i)*P(16)/(2*dco(i))
@@ -432,7 +431,7 @@
                       else
                          sigpo(i)=(1.+dexp(2*Pe3))/(-1.+dexp(2*Pe3))-1./Pe3 
                       endif               
-             
+
               endif          
             endif
  !  other reaction rates
@@ -447,11 +446,11 @@
             endif 
 ! debug          
 !            u(i)=P(23)
-            
-             
+
+
             S(i)=u(i)/dabs(u(i))                        
-            
-                   
+
+
 82         continue
 !           write (13,111) t,ph(N/4),k(N/4),u(N/4),w(N/4)
 !111        format (5(d12.5,1x))
@@ -466,21 +465,21 @@
            REAL*8 RAR(0:1000),RCAL(0:1000),ARAnew(0:1000),CALnew(0:1000)
            REAL*8 S(0:1000)
            REAL*8 dt,dx,P(35),a
-          
+
                integer N,i
            COMMON/par/P
            dx=P(16)
            dt=P(15)
-           
+
            a=dt/dx
-         
-              
+
+
            ARAnew(0)=ARA(0)
            CALnew(0)=CAL(0)
 
            do 30 i=1,n-1
-         
-         
+
+
              ARANEW(i)=ARA(i)-a*u(i)*(ARA(i)*S(i)-ARA(i-1)*0.5*(S(i)+1.)+ARA(i+1)*0.5*(1.-S(i)))&
  &              +dt*RAR(i)
              CALNEW(i)=CAL(i)-a*u(i)*(CAL(i)*S(i)-CAL(i-1)*0.5*(S(i)+1.)+CAL(i+1)*0.5*(1.-S(i)))&
@@ -490,28 +489,28 @@
              if(1-ARAnew(i).lt.1.d-10) ARAnew(i)=1.
              if(ARAnew(i).lt.1.d-70) ARAnew(i)=0.
              if(CALnew(i).lt.1.d-70) CALnew(i)=0.
-                   
+
 30         continue
 
              ARAnew(n)=ARA(n)-a*u(n)*S(n)*(ARA(n)-ARA(n-1))+dt*RAR(n)
              CALnew(n)=CAL(n)-a*u(n)*S(n)*(CAL(n)-CAL(n-1))+dt*RCAL(n)
-             
-             
+
+
              if(1-ARAnew(n)-CALnew(n).lt.1.d-70) ARAnew(n)=1-CALnew(n)
              if(1-CALnew(n).lt.1.d-10) CALnew(n)=1.
              if(1-ARAnew(n).lt.1.d-10) ARAnew(n)=1.
              if(ARAnew(n).lt.1.d-70) ARAnew(n)=0.
              if(CALnew(n).lt.1.d-70) CALnew(n)=0.
-          
-            
+
+
 !    update
              do 44 i=0,n
-                
+
                 ARA(i)=ARAnew(i)
                 CAL(i)=CALnew(i)
 44           continue                                 
 
-            
+
            return
            end
 ! ~\~ end
@@ -568,7 +567,7 @@ SUBROUTINE  projectY(n,ph,ca,co,W,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf,cah
     a=dt/(4*dx)
     b=dt/(4*dx*dx)
     difpor=P(35)
-    
+
     cahalf(0)=ca(0)
     cohalf(0)=co(0)
     phalf(0)=ph(0)
@@ -578,7 +577,7 @@ SUBROUTINE  projectY(n,ph,ca,co,W,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf,cah
                 &+2*b*difpor*(ph(i-1)-2*ph(i)+ph(i+1))+0.5*dt*Rp(i)
         if(phalf(i).lt.eps) phalf(i)=eps
         if(1-phalf(i).lt.eps) phalf(i)=1.-eps    
-         
+
         if(ph(i).le.eps) then
             cahalf(i)=ca(i)-a*w(i)*((1-sigca(i))*ca(i+1)+2*sigca(i)*ca(i)-(1+sigca(i))*ca(i-1)) &
                      &+0.5*dt*Rca(i)
@@ -628,7 +627,7 @@ end
            dt=P(15)
            eps=P(29)
            a=dt/(4*dx)
-         
+
            b=dt/(4*dx*dx)
            call matA(n,a,b,phalf,whalf,sigpo,sigca,sigco,dca,dco,aA1,bA1,cA1,aA2,bA2,cA2,aA3,bA3,cA3)
            call matBy(n,dt,a,b,ph,ca,co,phalf,whalf,sigpo,sigca,sigco,dca,dco,Rp,Rca,Rco,Bypo,Byca,Byco)
@@ -645,7 +644,7 @@ end
               IF(co(i).lt.1.d-15) co(i) = 0.
               if(ph(i).lt.eps) ph(i)=eps
              if(1-ph(i).lt.eps) ph(i)=1.-eps    
-               
+
 30        continue
           return
           end
@@ -736,7 +735,7 @@ end
        Bypo(i)=(a*whalf(i-1)*(1+sigpo(i-1))+2*b*difpor)*ph(i-1) &
  &             +(1.-a*2*whalf(i)*sigpo(i)-4*b*difpor)*ph(i) &
  &             +  (-a*whalf(i+1)*(1-sigpo(i+1))+2*b*difpor)*ph(i+1) + dt*Rp(i)
-      
+
  !
       if(phalf(i).le.eps) then
         Byca(i)= (a*whalf(i)*(1+sigca(i)))*ca(i-1) &
@@ -780,21 +779,21 @@ end
           INTEGER m,i
           g(m-1)=-a(m)/b(m)
           h(m-1)=r(m)/b(m)
-          do 10 i=m-2,0,-1
+          do i=m-2,0,-1
              denom=b(i+1)+c(i+1)*g(i+1)
                  if (dabs(denom).le.1.d-70) then
                     write (6,*)  'tridag a echoue a i et t=',i,t
                     WRITE(6,*) 'denom,b,c,g=',denom,b(i+2),c(i+2),g(i+2),b(i+1),c(i+1),g(i+1)
-                        pause
                  endif        
                  g(i)=-a(i+1)/denom
                  h(i)=(r(i+1)-c(i+1)*h(i+1))/denom
-10     continue
-        sol(0)=(r(0)-c(0)*h(0))/(b(0)+c(0)*g(0))
-          do 11 i=1,m
-11       sol(i)=sol(i-1)*g(i-1)+h(i-1)
-       return
-          end
+          end do
+          sol(0)=(r(0)-c(0)*h(0))/(b(0)+c(0)*g(0))
+          do i=1,m
+            sol(i)=sol(i-1)*g(i-1)+h(i-1)
+          end do
+          return
+       end
 ! ~\~ end
 ! ~\~ begin <<lit/index.md|init>>[init]
        subroutine init
@@ -823,25 +822,25 @@ end
 !           LAX=0
            dt=1.d-3
            dt=1.d-6
-        
-           
+
+
  !          length=2000.
- 
+
            xdis=50.
            xcem=-100.
            xcemf=1000.
            length=500.
- 
+
            Th=100.
-           
+
            eps=1.d-2
-       
+
            tmax=12
            outt=1
-           
-           
-           
-          
+
+
+
+
            outx=tmax/4
            N=200
            mua=100.09
@@ -853,25 +852,25 @@ end
            D0co3=272.6
            Ka=10.**(-6.19)
            Kc=10.**(-6.37)
-           
+
 
            beta=0.01
            k1=0.0
            k2=1.d-2
-           
+
            k3=1.d-3
-         
+
            m=2.48
            nn=2.8
  !          m=1.
   !         nn=1.
-          
-           
-             
+
+
+
            S=0.01
-          
+
            cAthy=0.1
-         
+
 !           phiinf=0.05
            phiinf=0.3
            phiinf=eps
@@ -883,8 +882,8 @@ end
            cara0=0.6
 !  old uniform sediment
            phi00=0.7
-           
-           
+
+
            ca00=0.5*dsqrt(Kc)
            co300=0.5*dsqrt(Kc)
            ccal00=0.3
@@ -897,7 +896,7 @@ end
            Vscale=beta
  ! Scale time with S   
            Vscale=S
-                  
+
            rhos0=rhot/(1-cara0*(1-rhot/rhoa)-ccal0*(1-rhot/rhoc))
            Xs=D0ca/Vscale
            Ts=D0ca/Vscale/Vscale
@@ -945,7 +944,7 @@ end
            P(11)=rhos0/rhow
            P(12)=P(11)
            P(27)=1.  
-    
+
 ! Initial conditions (dimensionless)
 
            pho(0)=phi0
@@ -972,7 +971,6 @@ end
            WRITE(6,*) 'dx^2/2d=', P(16)**2/(2*P(25))
            IF(P(15)*P(23)/P(16).gt.1./5.) then
               WRITE(6,*)' problem: possible instability'
-              pause
            endif
            write (6,*) 'scale for MA, MC =',rhos0*cara0*(1-phi0), rhos0*ccal0*(1-phi0)
            write (6,*) 'scale for c=',dsqrt(Kc)
@@ -980,10 +978,6 @@ end
            WRITE(6,*) 'scaled length, position of dissolution zone=', length/Xs, xdis/Xs,(xdis+Th)/Xs
            WRITE(6,*) 'a/Xs,b/Xs, rhosw-1=',P(21),P(28),P(13)
            write(6,*) '1/cXs,Dpor/Dca=',P(33),P(35)
-
-
-
-           PAUSE
        return
        end
 ! ~\~ end

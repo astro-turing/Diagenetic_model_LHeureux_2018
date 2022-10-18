@@ -4,14 +4,21 @@
 
 build_dir := build
 target := $(build_dir)/lheureux
+new_target := $(build_dir)/astro-turing
 flags := -Og -fbacktrace -Wall -Wextra  \
          -fimplicit-none -g -fcheck=all -std=legacy
+new_flags := -Og -fbacktrace -Wall -Wextra  \
+         -fimplicit-none -g -fcheck=all -ffree-line-length-none
 
-all: $(target)
+all: $(target) $(new_target)
 
 $(target): src/lheureux.f
 	@mkdir -p $(@D)
 	gfortran -ffree-form $(flags) $< -o $@
+
+$(new_target): src/patched.f90
+	@mkdir -p $(@D)
+	gfortran $(new_flags) $< -o $@
 
 # ENTANGLED + PANDOC PART
 
