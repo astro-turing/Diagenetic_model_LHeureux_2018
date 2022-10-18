@@ -4,6 +4,8 @@ subtitle: total decomposition of a Fortran code
 author: Johan Hidding
 ---
 
+- [Python interface](./python-interface.html)
+
 # Main
 The `COMMON` blocks in fortran create a kind of global variables. Here they're used to store the free parameters of the model. The array `P(35)` is used to store all input parameters and are used throughout.
 

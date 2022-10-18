@@ -29,7 +29,7 @@ $(new_target): $(object_files)
 
 theme := default
 # pandoc_input := README.md $(wildcard lit/*.md)
-pandoc_output := docs/index.html
+pandoc_output := docs/index.html  docs/python-interface.html
 
 theme_dir := .entangled/templates/$(theme)
 pandoc_args += -s -t html5 -f markdown+fenced_code_attributes+fenced_divs --toc --toc-depth 2
