@@ -53,7 +53,8 @@
            call auxf(t,n,ph,ca,co,ARA,CAL,U,S,W,OC,OA,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,RAR,RCAL)
            ! ~\~ end
            ! ~\~ begin <<lit/index.md|main-write-again>>[init]
-           write (12,100) t,P(18),P(18),P(18),P(18),P(19),P(19),P(19),P(19),P(8),P(8),P(8),P(8),ca(N/4),ca(N/2),ca(3*N/4),ca(N),co(N/4),co(N/2),co(3*N/4),co(N),U(N/4),W(N/4)
+           write (12,100) t,P(18),P(18),P(18),P(18),P(19),P(19),P(19),P(19),P(8),P(8),P(8),P(8), &
+                & ca(N/4),ca(N/2),ca(3*N/4),ca(N),co(N/4),co(N/2),co(3*N/4),co(N),U(N/4),W(N/4)
            ! ~\~ end
            wap=w(0)
            wap=wap    
@@ -252,7 +253,7 @@
                Rp(0)=P(26)*(ARA(0)*OA(0)-P(3)*CAL(0)*OC(0))*(1-ph(0))
             endif                       
  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                         
-             do 82 i=1,N
+             do i=1,N
 !  supersaturations
 !                F=dexp(-(i*dx-xpeak)**2/(2*xwidth**2))
                 if(i.lt.N) then
@@ -451,7 +452,7 @@
             S(i)=u(i)/dabs(u(i))                        
 
 
-82         continue
+         end do
 !           write (13,111) t,ph(N/4),k(N/4),u(N/4),w(N/4)
 !111        format (5(d12.5,1x))
            return
@@ -834,6 +835,7 @@ end
            call cfg%get("Solver", "Th", Th)
            call cfg%get("Solver", "tmax", tmax)
            call cfg%get("Solver", "outt", outt)
+           call cfg%get("Solver", "outx", outx)
            call cfg%get("Solver", "N", N)
            ! dt=1.d-6
            ! length=2000.
