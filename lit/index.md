@@ -917,15 +917,20 @@ end
 ``` {.fortran #init}
        subroutine init
 ! This routine defines all parameter values and initial conditions, to be passed in vector P.
+           use cfgio_mod, only: cfg_t, parse_cfg
            implicit none
+           type(cfg_t):: cfg
+
            real*8 pho(0:1000),cao(0:1000),coo(0:1000),ARAo(0:1000),CALo(0:1000)
            REAL*8 dt,dx, P(35),Th,mua,rhoa,rhoc,rhot,rhow,D0ca,D0co3,Ka,Kc,beta,k1,k2,k3,length,xdis
            REAL*8 m,nn,S,phi0,ca0,co30,ccal0,cara0,a,b,Vscale,rhos0,Xs,Ts,eps,xcem,xcemf
-           real*8 phi00,ca00,co300,ccal00,cara00,phiinf,cAthy
+           real*8 phiinf,cAthy
 !           REAL*8 arg,tgh
            integer tmax,N,outt,i,outx
            COMMON/general/ pho,cao,coo, ARAo,CALo,tmax,outx,outt, N
            COMMON/par/P
+
+           cfg = parse_cfg("input.cfg")
 !   DIMENSIONLESS TIMES, tmax=max time index, outx = time index for graphic x output
 !   outt= time index for graphic t outputs at four points
 !  dt, dx = discrete steps (dimensionless) ; N +1 = total number of nodes;
@@ -939,74 +944,61 @@ end
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !           LAX=0
-           dt=1.d-3
-           dt=1.d-6
+           call cfg%get("Solver", "dt", dt)
+           call cfg%get("Solver", "xdis", xdis)
+           call cfg%get("Solver", "xcem", xcem)
+           call cfg%get("Solver", "xcemf", xcemf)
+           call cfg%get("Solver", "length", length)
+           call cfg%get("Solver", "eps", eps)
+           call cfg%get("Solver", "Th", Th)
+           call cfg%get("Solver", "tmax", tmax)
+           call cfg%get("Solver", "outt", outt)
+           call cfg%get("Solver", "N", N)
+           ! dt=1.d-6
+           ! length=2000.
+           ! xdis=50.
+           ! xcem=-100.
+           ! xcemf=1000.
+           ! length=500.
+           !   Th=100.
+           !   eps=1.d-2
+           !   tmax=12
+           !   outt=1
+           !   outx=tmax/4
+           !   N=200
 
+           call cfg%get("Scenario", "mua", mua)
+           ! call cfg%get("Scenario", "muw", muw) not used
+           call cfg%get("Scenario", "rhoa", rhoa)
+           call cfg%get("Scenario", "rhoc", rhoc)
+           call cfg%get("Scenario", "rhot", rhot)
+           call cfg%get("Scenario", "rhow", rhow)
+           call cfg%get("Scenario", "D0ca", D0ca)
+           call cfg%get("Scenario", "D0co3", D0co3)
+           call cfg%get("Scenario", "Ka", Ka)
+           call cfg%get("Scenario", "Kc", Kc)
+           call cfg%get("Scenario", "beta", beta)
+           call cfg%get("Scenario", "k1", k1)
+           call cfg%get("Scenario", "k2", k2)
+           call cfg%get("Scenario", "k3", k3)
+           call cfg%get("Scenario", "nn", nn)
+           call cfg%get("Scenario", "m", m)
+           call cfg%get("Scenario", "S", S)
+           call cfg%get("Scenario", "cAthy", cAthy)
+           call cfg%get("Scenario", "phiinf", phiinf)
+           call cfg%get("Scenario", "phi0", phi0)
+           call cfg%get("Scenario", "ca0", ca0)
+           call cfg%get("Scenario", "co30", co30)
+           call cfg%get("Scenario", "ccal0", ccal0)
+           call cfg%get("Scenario", "cara0", cara0)
 
- !          length=2000.
-
-           xdis=50.
-           xcem=-100.
-           xcemf=1000.
-           length=500.
-
-           Th=100.
-
-           eps=1.d-2
-
-           tmax=12
-           outt=1
-
-
-
-
-           outx=tmax/4
-           N=200
-           mua=100.09
-           rhoa=2.95
-           rhoc=2.71
-           rhot=2.8
-           rhow=1.023
-           D0ca=131.9
-           D0co3=272.6
-           Ka=10.**(-6.19)
-           Kc=10.**(-6.37)
-
-
-           beta=0.01
-           k1=0.0
-           k2=1.d-2
-
-           k3=1.d-3
-
-           m=2.48
-           nn=2.8
- !          m=1.
-  !         nn=1.
-
-
-
-           S=0.01
-
-           cAthy=0.1
-
-!           phiinf=0.05
-           phiinf=0.3
-           phiinf=eps
 !  new incoming sediment          
-            phi0=0.7 
-           ca0=0.5*dsqrt(Kc)
-           co30=0.5*dsqrt(Kc)
-           ccal0=0.3
-           cara0=0.6
+         !    phi0=0.7 
+         !   ca0=0.5*dsqrt(Kc)
+         !   co30=0.5*dsqrt(Kc)
+         !   ccal0=0.3
+         !   cara0=0.6
 !  old uniform sediment
-           phi00=0.7
-
-
-           ca00=0.5*dsqrt(Kc)
-           co300=0.5*dsqrt(Kc)
-           ccal00=0.3
-           cara00=0.6           
            a=0.7 *length
            b=length/10.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1066,25 +1058,14 @@ end
 
 ! Initial conditions (dimensionless)
 
-           pho(0)=phi0
-           cao(0)=ca0/dsqrt(Kc)
-           coo(0)=co30/dsqrt(Kc)
-           ARAo(0)=cara0
-           CALo(0)=ccal0
-          do 10 i=1,N
-           pho(i)=phi00
-!           arg=(i*dx-P(21))/P(28)
-!               IF(arg.ge.0.) tgh=(1-dexp(-2*arg))/(1+dexp(-2*arg))
-!               IF(arg.lt.0.) tgh=(dexp(2*arg)-1)/(dexp(2*arg)+1)
-!           cao(i)=ca0/dsqrt(Kc)*0.5*(1-tgh)
-!           coo(i)=co30/dsqrt(Kc) *0.5*(1-tgh)
-           cao(i)=ca00/dsqrt(Kc)
-           coo(i)=co300/dsqrt(Kc)
-           ARAo(i)=cara00
-           CALo(i)=ccal00
+           do i=0,N
+            pho(i)=phi0
+            cao(i)=ca0/dsqrt(Kc)
+            coo(i)=co30/dsqrt(Kc)
+            ARAo(i)=cara0
+            CALo(i)=ccal0
+           end do
 
- 10     continue
-!
            write (6,*) 'Xs (cm), Ts (a)', Xs,Ts
            write (6,*) 'dt,dx,dtS/dx =', dt,dx,P(15)*(P(23)/P(16))
            WRITE(6,*) 'dx^2/2d=', P(16)**2/(2*P(25))

@@ -1084,188 +1084,169 @@ k_{i+1/2} &amp;= k_i - a w_i ((1-{\rm sig}k_i) k_{i+1} + 2({\rm sig}k_i)k_i - (1
 <p>«init»</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode fortran"><code class="sourceCode fortranfixed"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>       <span class="kw">subroutine</span> init</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">! This routine defines all parameter values and initial conditions, to be passed in vector P.</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>           <span class="kw">implicit</span> <span class="kw">none</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>           <span class="dt">real*8</span> pho(<span class="dv">0</span>:<span class="dv">1000</span>),cao(<span class="dv">0</span>:<span class="dv">1000</span>),coo(<span class="dv">0</span>:<span class="dv">1000</span>),ARAo(<span class="dv">0</span>:<span class="dv">1000</span>),CALo(<span class="co">0:1000)</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>           <span class="dt">REAL*8</span> dt,dx, P(<span class="dv">35</span>),Th,mua,rhoa,rhoc,rhot,rhow,D0ca,D0co3,Ka,<span class="co">Kc,beta,k1,k2,k3,length,xdis</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>           <span class="dt">REAL*8</span> m,nn,S,phi0,ca0,co30,ccal0,cara0,a,b,Vscale,rhos0,Xs,Ts,eps,xcem,xcemf</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>           <span class="dt">real*8</span> phi00,ca00,co300,ccal00,cara00,phiinf,cAthy</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co">!           REAL*8 arg,tgh</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>           <span class="dt">integer</span> tmax,N,outt,i,outx</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>           <span class="kw">COMMON/</span>general<span class="kw">/</span> pho,cao,coo, ARAo,CALo,tmax,outx,outt, N</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>           <span class="kw">COMMON/</span>par<span class="kw">/</span>P</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="co">!   DIMENSIONLESS TIMES, tmax=max time index, outx = time index for graphic x output</span></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="co">!   outt= time index for graphic t outputs at four points</span></span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co">!  dt, dx = discrete steps (dimensionless) ; N +1 = total number of nodes;</span></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co">! N must be a multiple of 4</span></span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="co">!  Th = thickness of active dissolution zone (cm); length = system size in cm, xdis=position of the beginning of the active dissolution zone (cm)</span></span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="co">! mua in g/mol, densities in g/cm3, diff (in pure water) in cm2/a, Ka, Kc in M2</span></span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="co">!</span></span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="co">! beta in cm/a, k1, k2,k3 in 1/a, m, n dimensionless</span></span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="co">! S in cm/a, phio,cal0,cara0 dimensionless, ca0, co30 in M, a and b (tangh profile for initial concentrations) in cm</span></span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="co">! cAthy Athys constant in cm-1; phiinf=porosity at the bottom of the compressed system</span></span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="co">!</span></span>
-<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a><span class="co">!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span></span>
-<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a><span class="co">!           LAX=0</span></span>
-<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>           dt<span class="kw">=</span><span class="fl">1.d-3</span></span>
-<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>           dt<span class="kw">=</span><span class="fl">1.d-6</span></span>
-<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a> <span class="co">!          length=2000.</span></span>
-<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>           xdis<span class="kw">=</span><span class="fl">50.</span></span>
-<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>           xcem<span class="kw">=-</span><span class="fl">100.</span></span>
-<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>           xcemf<span class="kw">=</span><span class="fl">1000.</span></span>
-<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>           length<span class="kw">=</span><span class="fl">500.</span></span>
-<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>           Th<span class="kw">=</span><span class="fl">100.</span></span>
-<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>           eps<span class="kw">=</span><span class="fl">1.d-2</span></span>
-<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>           tmax<span class="kw">=</span><span class="dv">12</span></span>
-<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>           outt<span class="kw">=</span><span class="dv">1</span></span>
-<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>           outx<span class="kw">=</span>tmax<span class="kw">/</span><span class="dv">4</span></span>
-<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>           N<span class="kw">=</span><span class="dv">200</span></span>
-<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>           mua<span class="kw">=</span><span class="fl">100.09</span></span>
-<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a>           rhoa<span class="kw">=</span><span class="fl">2.95</span></span>
-<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>           rhoc<span class="kw">=</span><span class="fl">2.71</span></span>
-<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>           rhot<span class="kw">=</span><span class="fl">2.8</span></span>
-<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a>           rhow<span class="kw">=</span><span class="fl">1.023</span></span>
-<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>           D0ca<span class="kw">=</span><span class="fl">131.9</span></span>
-<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>           D0co3<span class="kw">=</span><span class="fl">272.6</span></span>
-<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>           Ka<span class="kw">=</span><span class="fl">10.</span><span class="kw">**</span>(<span class="kw">-</span><span class="fl">6.19</span>)</span>
-<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>           Kc<span class="kw">=</span><span class="fl">10.</span><span class="kw">**</span>(<span class="kw">-</span><span class="fl">6.37</span>)</span>
-<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a>           beta<span class="kw">=</span><span class="fl">0.01</span></span>
-<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a>           k1<span class="kw">=</span><span class="fl">0.0</span></span>
-<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a>           k2<span class="kw">=</span><span class="fl">1.d-2</span></span>
-<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a>           k3<span class="kw">=</span><span class="fl">1.d-3</span></span>
-<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a>           m<span class="kw">=</span><span class="fl">2.48</span></span>
-<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a>           nn<span class="kw">=</span><span class="fl">2.8</span></span>
-<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a> <span class="co">!          m=1.</span></span>
-<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a>  <span class="co">!         nn=1.</span></span>
-<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-71"><a href="#cb11-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-72"><a href="#cb11-72" aria-hidden="true" tabindex="-1"></a>           S<span class="kw">=</span><span class="fl">0.01</span></span>
-<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-74"><a href="#cb11-74" aria-hidden="true" tabindex="-1"></a>           cAthy<span class="kw">=</span><span class="fl">0.1</span></span>
-<span id="cb11-75"><a href="#cb11-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a><span class="co">!           phiinf=0.05</span></span>
-<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a>           phiinf<span class="kw">=</span><span class="fl">0.3</span></span>
-<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a>           phiinf<span class="kw">=</span>eps</span>
-<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a><span class="co">!  new incoming sediment          </span></span>
-<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a>            phi0<span class="kw">=</span><span class="fl">0.7</span> </span>
-<span id="cb11-81"><a href="#cb11-81" aria-hidden="true" tabindex="-1"></a>           ca0<span class="kw">=</span><span class="fl">0.5</span><span class="kw">*</span><span class="bu">dsqrt</span>(Kc)</span>
-<span id="cb11-82"><a href="#cb11-82" aria-hidden="true" tabindex="-1"></a>           co30<span class="kw">=</span><span class="fl">0.5</span><span class="kw">*</span><span class="bu">dsqrt</span>(Kc)</span>
-<span id="cb11-83"><a href="#cb11-83" aria-hidden="true" tabindex="-1"></a>           ccal0<span class="kw">=</span><span class="fl">0.3</span></span>
-<span id="cb11-84"><a href="#cb11-84" aria-hidden="true" tabindex="-1"></a>           cara0<span class="kw">=</span><span class="fl">0.6</span></span>
-<span id="cb11-85"><a href="#cb11-85" aria-hidden="true" tabindex="-1"></a><span class="co">!  old uniform sediment</span></span>
-<span id="cb11-86"><a href="#cb11-86" aria-hidden="true" tabindex="-1"></a>           phi00<span class="kw">=</span><span class="fl">0.7</span></span>
-<span id="cb11-87"><a href="#cb11-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-88"><a href="#cb11-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-89"><a href="#cb11-89" aria-hidden="true" tabindex="-1"></a>           ca00<span class="kw">=</span><span class="fl">0.5</span><span class="kw">*</span><span class="bu">dsqrt</span>(Kc)</span>
-<span id="cb11-90"><a href="#cb11-90" aria-hidden="true" tabindex="-1"></a>           co300<span class="kw">=</span><span class="fl">0.5</span><span class="kw">*</span><span class="bu">dsqrt</span>(Kc)</span>
-<span id="cb11-91"><a href="#cb11-91" aria-hidden="true" tabindex="-1"></a>           ccal00<span class="kw">=</span><span class="fl">0.3</span></span>
-<span id="cb11-92"><a href="#cb11-92" aria-hidden="true" tabindex="-1"></a>           cara00<span class="kw">=</span><span class="fl">0.6</span>           </span>
-<span id="cb11-93"><a href="#cb11-93" aria-hidden="true" tabindex="-1"></a>           a<span class="kw">=</span><span class="fl">0.7</span> <span class="kw">*</span>length</span>
-<span id="cb11-94"><a href="#cb11-94" aria-hidden="true" tabindex="-1"></a>           b<span class="kw">=</span>length<span class="kw">/</span><span class="fl">10.</span></span>
-<span id="cb11-95"><a href="#cb11-95" aria-hidden="true" tabindex="-1"></a><span class="co">!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span></span>
-<span id="cb11-96"><a href="#cb11-96" aria-hidden="true" tabindex="-1"></a> <span class="co">!          K0=beta*phi0**3/(1-phi0)**2</span></span>
-<span id="cb11-97"><a href="#cb11-97" aria-hidden="true" tabindex="-1"></a> <span class="co">! Scale time with beta</span></span>
-<span id="cb11-98"><a href="#cb11-98" aria-hidden="true" tabindex="-1"></a>           Vscale<span class="kw">=</span>beta</span>
-<span id="cb11-99"><a href="#cb11-99" aria-hidden="true" tabindex="-1"></a> <span class="co">! Scale time with S   </span></span>
-<span id="cb11-100"><a href="#cb11-100" aria-hidden="true" tabindex="-1"></a>           Vscale<span class="kw">=</span>S</span>
-<span id="cb11-101"><a href="#cb11-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-102"><a href="#cb11-102" aria-hidden="true" tabindex="-1"></a>           rhos0<span class="kw">=</span>rhot<span class="kw">/</span>(<span class="dv">1</span><span class="kw">-</span>cara0<span class="kw">*</span>(<span class="dv">1</span><span class="kw">-</span>rhot<span class="kw">/</span>rhoa)<span class="kw">-</span>ccal0<span class="kw">*</span>(<span class="dv">1</span><span class="kw">-</span>rhot<span class="kw">/</span>rhoc))</span>
-<span id="cb11-103"><a href="#cb11-103" aria-hidden="true" tabindex="-1"></a>           Xs<span class="kw">=</span>D0ca<span class="kw">/</span>Vscale</span>
-<span id="cb11-104"><a href="#cb11-104" aria-hidden="true" tabindex="-1"></a>           Ts<span class="kw">=</span>D0ca<span class="kw">/</span>Vscale<span class="kw">/</span>Vscale</span>
-<span id="cb11-105"><a href="#cb11-105" aria-hidden="true" tabindex="-1"></a>           dx<span class="kw">=</span>(length<span class="kw">/</span>Xs)<span class="kw">/</span>N</span>
-<span id="cb11-106"><a href="#cb11-106" aria-hidden="true" tabindex="-1"></a><span class="co">!         </span></span>
-<span id="cb11-107"><a href="#cb11-107" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">1</span>)<span class="kw">=</span> m</span>
-<span id="cb11-108"><a href="#cb11-108" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">2</span>)<span class="kw">=</span> nn</span>
-<span id="cb11-109"><a href="#cb11-109" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">3</span>)<span class="kw">=</span> k3<span class="kw">/</span>k2</span>
-<span id="cb11-110"><a href="#cb11-110" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">4</span>)<span class="kw">=</span> k1<span class="kw">/</span>k2</span>
-<span id="cb11-111"><a href="#cb11-111" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">5</span>)<span class="kw">=</span>cara0<span class="kw">/</span>ccal0</span>
-<span id="cb11-112"><a href="#cb11-112" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">6</span>)<span class="kw">=</span> rhos0<span class="kw">*</span>ccal0<span class="kw">/</span>(mua<span class="kw">*</span><span class="bu">dsqrt</span>(Kc))</span>
-<span id="cb11-113"><a href="#cb11-113" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">7</span>)<span class="kw">=</span> rhos0<span class="kw">*</span>ccal0<span class="kw">/</span>rhoc</span>
-<span id="cb11-114"><a href="#cb11-114" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">8</span>)<span class="kw">=</span>phi0</span>
-<span id="cb11-115"><a href="#cb11-115" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">9</span>)<span class="kw">=</span> <span class="fl">1.</span><span class="kw">-</span>rhot<span class="kw">/</span>rhoc</span>
-<span id="cb11-116"><a href="#cb11-116" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">10</span>)<span class="kw">=</span> <span class="fl">1.</span><span class="kw">-</span>rhot<span class="kw">/</span>rhoa</span>
-<span id="cb11-117"><a href="#cb11-117" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">11</span>)<span class="kw">=</span> rhot<span class="kw">/</span>rhow</span>
-<span id="cb11-118"><a href="#cb11-118" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">12</span>)<span class="kw">=</span>rhoc<span class="kw">/</span>rhow</span>
-<span id="cb11-119"><a href="#cb11-119" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">13</span>)<span class="kw">=</span>rhos0<span class="kw">/</span>rhow<span class="kw">-</span><span class="fl">1.</span></span>
-<span id="cb11-120"><a href="#cb11-120" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">14</span>)<span class="kw">=</span>Th<span class="kw">/</span>Xs</span>
-<span id="cb11-121"><a href="#cb11-121" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">15</span>)<span class="kw">=</span>dt</span>
-<span id="cb11-122"><a href="#cb11-122" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">16</span>)<span class="kw">=</span>dx</span>
-<span id="cb11-123"><a href="#cb11-123" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">17</span>)<span class="kw">=</span><span class="dv">1</span><span class="kw">-</span>cara0<span class="kw">-</span>ccal0</span>
-<span id="cb11-124"><a href="#cb11-124" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">18</span>)<span class="kw">=</span>cara0</span>
-<span id="cb11-125"><a href="#cb11-125" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">19</span>)<span class="kw">=</span>ccal0</span>
-<span id="cb11-126"><a href="#cb11-126" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">20</span>)<span class="kw">=</span>rhos0<span class="kw">/</span>rhow</span>
-<span id="cb11-127"><a href="#cb11-127" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">21</span>)<span class="kw">=</span>a<span class="kw">/</span>Xs</span>
-<span id="cb11-128"><a href="#cb11-128" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">22</span>)<span class="kw">=</span>xdis<span class="kw">/</span>Xs</span>
-<span id="cb11-129"><a href="#cb11-129" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">23</span>)<span class="kw">=</span>S<span class="kw">/</span>Vscale</span>
-<span id="cb11-130"><a href="#cb11-130" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">24</span>)<span class="kw">=</span>Kc<span class="kw">/</span>Ka</span>
-<span id="cb11-131"><a href="#cb11-131" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">25</span>)<span class="kw">=</span> D0co3<span class="kw">/</span>D0ca</span>
-<span id="cb11-132"><a href="#cb11-132" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">26</span>)<span class="kw">=</span>k2<span class="kw">*</span>Ts</span>
-<span id="cb11-133"><a href="#cb11-133" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">27</span>)<span class="kw">=</span>rhoc<span class="kw">/</span>rhoa</span>
-<span id="cb11-134"><a href="#cb11-134" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">28</span>)<span class="kw">=</span>b<span class="kw">/</span>Xs</span>
-<span id="cb11-135"><a href="#cb11-135" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">29</span>)<span class="kw">=</span>eps</span>
-<span id="cb11-136"><a href="#cb11-136" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">30</span>)<span class="kw">=</span>xcem<span class="kw">/</span>Xs         </span>
-<span id="cb11-137"><a href="#cb11-137" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">31</span>)<span class="kw">=</span>xcemf<span class="kw">/</span>Xs</span>
-<span id="cb11-138"><a href="#cb11-138" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">32</span>)<span class="kw">=</span>beta<span class="kw">/</span>Vscale</span>
-<span id="cb11-139"><a href="#cb11-139" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">33</span>)<span class="kw">=</span><span class="fl">1.</span><span class="kw">/</span>(cAthy<span class="kw">*</span>Xs)</span>
-<span id="cb11-140"><a href="#cb11-140" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">34</span>)<span class="kw">=</span>phiinf</span>
-<span id="cb11-141"><a href="#cb11-141" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">35</span>)<span class="kw">=</span>beta<span class="kw">*</span>phi0<span class="kw">**</span><span class="dv">3</span><span class="kw">/</span>((phi0<span class="kw">-</span>phiinf)<span class="kw">*</span>cAthy)<span class="kw">/</span>D0ca</span>
-<span id="cb11-142"><a href="#cb11-142" aria-hidden="true" tabindex="-1"></a><span class="co">!  case where all densities are equal to rhos</span></span>
-<span id="cb11-143"><a href="#cb11-143" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">7</span>)<span class="kw">=</span>ccal0</span>
-<span id="cb11-144"><a href="#cb11-144" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">9</span>)<span class="kw">=</span><span class="fl">0.</span></span>
-<span id="cb11-145"><a href="#cb11-145" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">10</span>)<span class="kw">=</span><span class="fl">0.</span></span>
-<span id="cb11-146"><a href="#cb11-146" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">11</span>)<span class="kw">=</span>rhos0<span class="kw">/</span>rhow</span>
-<span id="cb11-147"><a href="#cb11-147" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">12</span>)<span class="kw">=</span>P(<span class="dv">11</span>)</span>
-<span id="cb11-148"><a href="#cb11-148" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">27</span>)<span class="kw">=</span><span class="fl">1.</span>  </span>
-<span id="cb11-149"><a href="#cb11-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-150"><a href="#cb11-150" aria-hidden="true" tabindex="-1"></a><span class="co">! Initial conditions (dimensionless)</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>           <span class="kw">use</span> cfgio_mod, <span class="kw">only</span>: cfg_t, parse_cfg</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>           <span class="kw">implicit</span> <span class="kw">none</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>           <span class="dt">type(cfg_t)::</span> cfg</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>           <span class="dt">real*8</span> pho(<span class="dv">0</span>:<span class="dv">1000</span>),cao(<span class="dv">0</span>:<span class="dv">1000</span>),coo(<span class="dv">0</span>:<span class="dv">1000</span>),ARAo(<span class="dv">0</span>:<span class="dv">1000</span>),CALo(<span class="co">0:1000)</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>           <span class="dt">REAL*8</span> dt,dx, P(<span class="dv">35</span>),Th,mua,rhoa,rhoc,rhot,rhow,D0ca,D0co3,Ka,<span class="co">Kc,beta,k1,k2,k3,length,xdis</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>           <span class="dt">REAL*8</span> m,nn,S,phi0,ca0,co30,ccal0,cara0,a,b,Vscale,rhos0,Xs,Ts,eps,xcem,xcemf</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>           <span class="dt">real*8</span> phiinf,cAthy</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co">!           REAL*8 arg,tgh</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>           <span class="dt">integer</span> tmax,N,outt,i,outx</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>           <span class="kw">COMMON/</span>general<span class="kw">/</span> pho,cao,coo, ARAo,CALo,tmax,outx,outt, N</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>           <span class="kw">COMMON/</span>par<span class="kw">/</span>P</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>           cfg <span class="kw">=</span> parse_cfg(<span class="st">&quot;input.cfg&quot;</span>)</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="co">!   DIMENSIONLESS TIMES, tmax=max time index, outx = time index for graphic x output</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="co">!   outt= time index for graphic t outputs at four points</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="co">!  dt, dx = discrete steps (dimensionless) ; N +1 = total number of nodes;</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="co">! N must be a multiple of 4</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="co">!  Th = thickness of active dissolution zone (cm); length = system size in cm, xdis=position of the beginning of the active dissolution zone (cm)</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="co">! mua in g/mol, densities in g/cm3, diff (in pure water) in cm2/a, Ka, Kc in M2</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a><span class="co">!</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a><span class="co">! beta in cm/a, k1, k2,k3 in 1/a, m, n dimensionless</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a><span class="co">! S in cm/a, phio,cal0,cara0 dimensionless, ca0, co30 in M, a and b (tangh profile for initial concentrations) in cm</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a><span class="co">! cAthy Athys constant in cm-1; phiinf=porosity at the bottom of the compressed system</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a><span class="co">!</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a><span class="co">!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a><span class="co">!           LAX=0</span></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;dt&quot;</span>, dt)</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;xdis&quot;</span>, xdis)</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;xcem&quot;</span>, xcem)</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;xcemf&quot;</span>, xcemf)</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;length&quot;</span>, length)</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;eps&quot;</span>, eps)</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;Th&quot;</span>, Th)</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;tmax&quot;</span>, tmax)</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;outt&quot;</span>, outt)</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;N&quot;</span>, N)</span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>           <span class="co">! dt=1.d-6</span></span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>           <span class="co">! length=2000.</span></span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>           <span class="co">! xdis=50.</span></span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>           <span class="co">! xcem=-100.</span></span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>           <span class="co">! xcemf=1000.</span></span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>           <span class="co">! length=500.</span></span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>           <span class="co">!   Th=100.</span></span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>           <span class="co">!   eps=1.d-2</span></span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>           <span class="co">!   tmax=12</span></span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a>           <span class="co">!   outt=1</span></span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>           <span class="co">!   outx=tmax/4</span></span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>           <span class="co">!   N=200</span></span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;mua&quot;</span>, mua)</span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>           <span class="co">! call cfg%get(&quot;Scenario&quot;, &quot;muw&quot;, muw) not used</span></span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;rhoa&quot;</span>, rhoa)</span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;rhoc&quot;</span>, rhoc)</span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;rhot&quot;</span>, rhot)</span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;rhow&quot;</span>, rhow)</span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;D0ca&quot;</span>, D0ca)</span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;D0co3&quot;</span>, D0co3)</span>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;Ka&quot;</span>, Ka)</span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;Kc&quot;</span>, Kc)</span>
+<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;beta&quot;</span>, beta)</span>
+<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;k1&quot;</span>, k1)</span>
+<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;k2&quot;</span>, k2)</span>
+<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;k3&quot;</span>, k3)</span>
+<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;nn&quot;</span>, nn)</span>
+<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;m&quot;</span>, m)</span>
+<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;S&quot;</span>, S)</span>
+<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;cAthy&quot;</span>, cAthy)</span>
+<span id="cb11-71"><a href="#cb11-71" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;phiinf&quot;</span>, phiinf)</span>
+<span id="cb11-72"><a href="#cb11-72" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;phi0&quot;</span>, phi0)</span>
+<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;ca0&quot;</span>, ca0)</span>
+<span id="cb11-74"><a href="#cb11-74" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;co30&quot;</span>, co30)</span>
+<span id="cb11-75"><a href="#cb11-75" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;ccal0&quot;</span>, ccal0)</span>
+<span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;cara0&quot;</span>, cara0)</span>
+<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a><span class="co">!  new incoming sediment          </span></span>
+<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a>         <span class="co">!    phi0=0.7 </span></span>
+<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a>         <span class="co">!   ca0=0.5*dsqrt(Kc)</span></span>
+<span id="cb11-81"><a href="#cb11-81" aria-hidden="true" tabindex="-1"></a>         <span class="co">!   co30=0.5*dsqrt(Kc)</span></span>
+<span id="cb11-82"><a href="#cb11-82" aria-hidden="true" tabindex="-1"></a>         <span class="co">!   ccal0=0.3</span></span>
+<span id="cb11-83"><a href="#cb11-83" aria-hidden="true" tabindex="-1"></a>         <span class="co">!   cara0=0.6</span></span>
+<span id="cb11-84"><a href="#cb11-84" aria-hidden="true" tabindex="-1"></a><span class="co">!  old uniform sediment</span></span>
+<span id="cb11-85"><a href="#cb11-85" aria-hidden="true" tabindex="-1"></a>           a<span class="kw">=</span><span class="fl">0.7</span> <span class="kw">*</span>length</span>
+<span id="cb11-86"><a href="#cb11-86" aria-hidden="true" tabindex="-1"></a>           b<span class="kw">=</span>length<span class="kw">/</span><span class="fl">10.</span></span>
+<span id="cb11-87"><a href="#cb11-87" aria-hidden="true" tabindex="-1"></a><span class="co">!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span></span>
+<span id="cb11-88"><a href="#cb11-88" aria-hidden="true" tabindex="-1"></a> <span class="co">!          K0=beta*phi0**3/(1-phi0)**2</span></span>
+<span id="cb11-89"><a href="#cb11-89" aria-hidden="true" tabindex="-1"></a> <span class="co">! Scale time with beta</span></span>
+<span id="cb11-90"><a href="#cb11-90" aria-hidden="true" tabindex="-1"></a>           Vscale<span class="kw">=</span>beta</span>
+<span id="cb11-91"><a href="#cb11-91" aria-hidden="true" tabindex="-1"></a> <span class="co">! Scale time with S   </span></span>
+<span id="cb11-92"><a href="#cb11-92" aria-hidden="true" tabindex="-1"></a>           Vscale<span class="kw">=</span>S</span>
+<span id="cb11-93"><a href="#cb11-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-94"><a href="#cb11-94" aria-hidden="true" tabindex="-1"></a>           rhos0<span class="kw">=</span>rhot<span class="kw">/</span>(<span class="dv">1</span><span class="kw">-</span>cara0<span class="kw">*</span>(<span class="dv">1</span><span class="kw">-</span>rhot<span class="kw">/</span>rhoa)<span class="kw">-</span>ccal0<span class="kw">*</span>(<span class="dv">1</span><span class="kw">-</span>rhot<span class="kw">/</span>rhoc))</span>
+<span id="cb11-95"><a href="#cb11-95" aria-hidden="true" tabindex="-1"></a>           Xs<span class="kw">=</span>D0ca<span class="kw">/</span>Vscale</span>
+<span id="cb11-96"><a href="#cb11-96" aria-hidden="true" tabindex="-1"></a>           Ts<span class="kw">=</span>D0ca<span class="kw">/</span>Vscale<span class="kw">/</span>Vscale</span>
+<span id="cb11-97"><a href="#cb11-97" aria-hidden="true" tabindex="-1"></a>           dx<span class="kw">=</span>(length<span class="kw">/</span>Xs)<span class="kw">/</span>N</span>
+<span id="cb11-98"><a href="#cb11-98" aria-hidden="true" tabindex="-1"></a><span class="co">!         </span></span>
+<span id="cb11-99"><a href="#cb11-99" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">1</span>)<span class="kw">=</span> m</span>
+<span id="cb11-100"><a href="#cb11-100" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">2</span>)<span class="kw">=</span> nn</span>
+<span id="cb11-101"><a href="#cb11-101" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">3</span>)<span class="kw">=</span> k3<span class="kw">/</span>k2</span>
+<span id="cb11-102"><a href="#cb11-102" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">4</span>)<span class="kw">=</span> k1<span class="kw">/</span>k2</span>
+<span id="cb11-103"><a href="#cb11-103" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">5</span>)<span class="kw">=</span>cara0<span class="kw">/</span>ccal0</span>
+<span id="cb11-104"><a href="#cb11-104" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">6</span>)<span class="kw">=</span> rhos0<span class="kw">*</span>ccal0<span class="kw">/</span>(mua<span class="kw">*</span><span class="bu">dsqrt</span>(Kc))</span>
+<span id="cb11-105"><a href="#cb11-105" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">7</span>)<span class="kw">=</span> rhos0<span class="kw">*</span>ccal0<span class="kw">/</span>rhoc</span>
+<span id="cb11-106"><a href="#cb11-106" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">8</span>)<span class="kw">=</span>phi0</span>
+<span id="cb11-107"><a href="#cb11-107" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">9</span>)<span class="kw">=</span> <span class="fl">1.</span><span class="kw">-</span>rhot<span class="kw">/</span>rhoc</span>
+<span id="cb11-108"><a href="#cb11-108" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">10</span>)<span class="kw">=</span> <span class="fl">1.</span><span class="kw">-</span>rhot<span class="kw">/</span>rhoa</span>
+<span id="cb11-109"><a href="#cb11-109" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">11</span>)<span class="kw">=</span> rhot<span class="kw">/</span>rhow</span>
+<span id="cb11-110"><a href="#cb11-110" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">12</span>)<span class="kw">=</span>rhoc<span class="kw">/</span>rhow</span>
+<span id="cb11-111"><a href="#cb11-111" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">13</span>)<span class="kw">=</span>rhos0<span class="kw">/</span>rhow<span class="kw">-</span><span class="fl">1.</span></span>
+<span id="cb11-112"><a href="#cb11-112" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">14</span>)<span class="kw">=</span>Th<span class="kw">/</span>Xs</span>
+<span id="cb11-113"><a href="#cb11-113" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">15</span>)<span class="kw">=</span>dt</span>
+<span id="cb11-114"><a href="#cb11-114" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">16</span>)<span class="kw">=</span>dx</span>
+<span id="cb11-115"><a href="#cb11-115" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">17</span>)<span class="kw">=</span><span class="dv">1</span><span class="kw">-</span>cara0<span class="kw">-</span>ccal0</span>
+<span id="cb11-116"><a href="#cb11-116" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">18</span>)<span class="kw">=</span>cara0</span>
+<span id="cb11-117"><a href="#cb11-117" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">19</span>)<span class="kw">=</span>ccal0</span>
+<span id="cb11-118"><a href="#cb11-118" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">20</span>)<span class="kw">=</span>rhos0<span class="kw">/</span>rhow</span>
+<span id="cb11-119"><a href="#cb11-119" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">21</span>)<span class="kw">=</span>a<span class="kw">/</span>Xs</span>
+<span id="cb11-120"><a href="#cb11-120" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">22</span>)<span class="kw">=</span>xdis<span class="kw">/</span>Xs</span>
+<span id="cb11-121"><a href="#cb11-121" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">23</span>)<span class="kw">=</span>S<span class="kw">/</span>Vscale</span>
+<span id="cb11-122"><a href="#cb11-122" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">24</span>)<span class="kw">=</span>Kc<span class="kw">/</span>Ka</span>
+<span id="cb11-123"><a href="#cb11-123" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">25</span>)<span class="kw">=</span> D0co3<span class="kw">/</span>D0ca</span>
+<span id="cb11-124"><a href="#cb11-124" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">26</span>)<span class="kw">=</span>k2<span class="kw">*</span>Ts</span>
+<span id="cb11-125"><a href="#cb11-125" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">27</span>)<span class="kw">=</span>rhoc<span class="kw">/</span>rhoa</span>
+<span id="cb11-126"><a href="#cb11-126" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">28</span>)<span class="kw">=</span>b<span class="kw">/</span>Xs</span>
+<span id="cb11-127"><a href="#cb11-127" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">29</span>)<span class="kw">=</span>eps</span>
+<span id="cb11-128"><a href="#cb11-128" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">30</span>)<span class="kw">=</span>xcem<span class="kw">/</span>Xs         </span>
+<span id="cb11-129"><a href="#cb11-129" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">31</span>)<span class="kw">=</span>xcemf<span class="kw">/</span>Xs</span>
+<span id="cb11-130"><a href="#cb11-130" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">32</span>)<span class="kw">=</span>beta<span class="kw">/</span>Vscale</span>
+<span id="cb11-131"><a href="#cb11-131" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">33</span>)<span class="kw">=</span><span class="fl">1.</span><span class="kw">/</span>(cAthy<span class="kw">*</span>Xs)</span>
+<span id="cb11-132"><a href="#cb11-132" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">34</span>)<span class="kw">=</span>phiinf</span>
+<span id="cb11-133"><a href="#cb11-133" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">35</span>)<span class="kw">=</span>beta<span class="kw">*</span>phi0<span class="kw">**</span><span class="dv">3</span><span class="kw">/</span>((phi0<span class="kw">-</span>phiinf)<span class="kw">*</span>cAthy)<span class="kw">/</span>D0ca</span>
+<span id="cb11-134"><a href="#cb11-134" aria-hidden="true" tabindex="-1"></a><span class="co">!  case where all densities are equal to rhos</span></span>
+<span id="cb11-135"><a href="#cb11-135" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">7</span>)<span class="kw">=</span>ccal0</span>
+<span id="cb11-136"><a href="#cb11-136" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">9</span>)<span class="kw">=</span><span class="fl">0.</span></span>
+<span id="cb11-137"><a href="#cb11-137" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">10</span>)<span class="kw">=</span><span class="fl">0.</span></span>
+<span id="cb11-138"><a href="#cb11-138" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">11</span>)<span class="kw">=</span>rhos0<span class="kw">/</span>rhow</span>
+<span id="cb11-139"><a href="#cb11-139" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">12</span>)<span class="kw">=</span>P(<span class="dv">11</span>)</span>
+<span id="cb11-140"><a href="#cb11-140" aria-hidden="true" tabindex="-1"></a>           P(<span class="dv">27</span>)<span class="kw">=</span><span class="fl">1.</span>  </span>
+<span id="cb11-141"><a href="#cb11-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-142"><a href="#cb11-142" aria-hidden="true" tabindex="-1"></a><span class="co">! Initial conditions (dimensionless)</span></span>
+<span id="cb11-143"><a href="#cb11-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-144"><a href="#cb11-144" aria-hidden="true" tabindex="-1"></a>           <span class="kw">do</span> i<span class="kw">=</span><span class="dv">0</span>,N</span>
+<span id="cb11-145"><a href="#cb11-145" aria-hidden="true" tabindex="-1"></a>            pho(i)<span class="kw">=</span>phi0</span>
+<span id="cb11-146"><a href="#cb11-146" aria-hidden="true" tabindex="-1"></a>            cao(i)<span class="kw">=</span>ca0<span class="kw">/</span><span class="bu">dsqrt</span>(Kc)</span>
+<span id="cb11-147"><a href="#cb11-147" aria-hidden="true" tabindex="-1"></a>            coo(i)<span class="kw">=</span>co30<span class="kw">/</span><span class="bu">dsqrt</span>(Kc)</span>
+<span id="cb11-148"><a href="#cb11-148" aria-hidden="true" tabindex="-1"></a>            ARAo(i)<span class="kw">=</span>cara0</span>
+<span id="cb11-149"><a href="#cb11-149" aria-hidden="true" tabindex="-1"></a>            CALo(i)<span class="kw">=</span>ccal0</span>
+<span id="cb11-150"><a href="#cb11-150" aria-hidden="true" tabindex="-1"></a>           <span class="kw">end do</span></span>
 <span id="cb11-151"><a href="#cb11-151" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-152"><a href="#cb11-152" aria-hidden="true" tabindex="-1"></a>           pho(<span class="dv">0</span>)<span class="kw">=</span>phi0</span>
-<span id="cb11-153"><a href="#cb11-153" aria-hidden="true" tabindex="-1"></a>           cao(<span class="dv">0</span>)<span class="kw">=</span>ca0<span class="kw">/</span><span class="bu">dsqrt</span>(Kc)</span>
-<span id="cb11-154"><a href="#cb11-154" aria-hidden="true" tabindex="-1"></a>           coo(<span class="dv">0</span>)<span class="kw">=</span>co30<span class="kw">/</span><span class="bu">dsqrt</span>(Kc)</span>
-<span id="cb11-155"><a href="#cb11-155" aria-hidden="true" tabindex="-1"></a>           ARAo(<span class="dv">0</span>)<span class="kw">=</span>cara0</span>
-<span id="cb11-156"><a href="#cb11-156" aria-hidden="true" tabindex="-1"></a>           CALo(<span class="dv">0</span>)<span class="kw">=</span>ccal0</span>
-<span id="cb11-157"><a href="#cb11-157" aria-hidden="true" tabindex="-1"></a>          <span class="kw">do</span> <span class="dv">10</span> i<span class="kw">=</span><span class="dv">1</span>,N</span>
-<span id="cb11-158"><a href="#cb11-158" aria-hidden="true" tabindex="-1"></a>           pho(i)<span class="kw">=</span>phi00</span>
-<span id="cb11-159"><a href="#cb11-159" aria-hidden="true" tabindex="-1"></a><span class="co">!           arg=(i*dx-P(21))/P(28)</span></span>
-<span id="cb11-160"><a href="#cb11-160" aria-hidden="true" tabindex="-1"></a><span class="co">!               IF(arg.ge.0.) tgh=(1-dexp(-2*arg))/(1+dexp(-2*arg))</span></span>
-<span id="cb11-161"><a href="#cb11-161" aria-hidden="true" tabindex="-1"></a><span class="co">!               IF(arg.lt.0.) tgh=(dexp(2*arg)-1)/(dexp(2*arg)+1)</span></span>
-<span id="cb11-162"><a href="#cb11-162" aria-hidden="true" tabindex="-1"></a><span class="co">!           cao(i)=ca0/dsqrt(Kc)*0.5*(1-tgh)</span></span>
-<span id="cb11-163"><a href="#cb11-163" aria-hidden="true" tabindex="-1"></a><span class="co">!           coo(i)=co30/dsqrt(Kc) *0.5*(1-tgh)</span></span>
-<span id="cb11-164"><a href="#cb11-164" aria-hidden="true" tabindex="-1"></a>           cao(i)<span class="kw">=</span>ca00<span class="kw">/</span><span class="bu">dsqrt</span>(Kc)</span>
-<span id="cb11-165"><a href="#cb11-165" aria-hidden="true" tabindex="-1"></a>           coo(i)<span class="kw">=</span>co300<span class="kw">/</span><span class="bu">dsqrt</span>(Kc)</span>
-<span id="cb11-166"><a href="#cb11-166" aria-hidden="true" tabindex="-1"></a>           ARAo(i)<span class="kw">=</span>cara00</span>
-<span id="cb11-167"><a href="#cb11-167" aria-hidden="true" tabindex="-1"></a>           CALo(i)<span class="kw">=</span>ccal00</span>
-<span id="cb11-168"><a href="#cb11-168" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-169"><a href="#cb11-169" aria-hidden="true" tabindex="-1"></a> <span class="dv">10</span>     <span class="kw">continue</span></span>
-<span id="cb11-170"><a href="#cb11-170" aria-hidden="true" tabindex="-1"></a><span class="co">!</span></span>
-<span id="cb11-171"><a href="#cb11-171" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;Xs (cm), Ts (a)&#39;</span>, Xs,Ts</span>
-<span id="cb11-172"><a href="#cb11-172" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;dt,dx,dtS/dx =&#39;</span>, dt,dx,P(<span class="dv">15</span>)<span class="kw">*</span>(P(<span class="dv">23</span>)<span class="kw">/</span>P(<span class="dv">16</span>))</span>
-<span id="cb11-173"><a href="#cb11-173" aria-hidden="true" tabindex="-1"></a>           <span class="fu">WRITE(</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;dx^2/2d=&#39;</span>, P(<span class="dv">16</span>)<span class="kw">**</span><span class="dv">2</span><span class="kw">/</span>(<span class="dv">2</span><span class="kw">*</span>P(<span class="dv">25</span>))</span>
-<span id="cb11-174"><a href="#cb11-174" aria-hidden="true" tabindex="-1"></a>           <span class="kw">IF</span>(P(<span class="dv">15</span>)<span class="kw">*</span>P(<span class="dv">23</span>)<span class="kw">/</span>P(<span class="dv">16</span>)<span class="op">.gt.</span><span class="fl">1.</span><span class="kw">/</span><span class="fl">5.</span>) <span class="kw">then</span></span>
-<span id="cb11-175"><a href="#cb11-175" aria-hidden="true" tabindex="-1"></a>              <span class="fu">WRITE(</span><span class="dv">6</span>,<span class="fu">*)</span><span class="st">&#39; problem: possible instability&#39;</span></span>
-<span id="cb11-176"><a href="#cb11-176" aria-hidden="true" tabindex="-1"></a>           <span class="kw">endif</span></span>
-<span id="cb11-177"><a href="#cb11-177" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;scale for MA, MC =&#39;</span>,rhos0<span class="kw">*</span>cara0<span class="kw">*</span>(<span class="dv">1</span><span class="kw">-</span>phi0), rhos0<span class="kw">*</span><span class="co">ccal0*(1-phi0)</span></span>
-<span id="cb11-178"><a href="#cb11-178" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;scale for c=&#39;</span>,<span class="bu">dsqrt</span>(Kc)</span>
-<span id="cb11-179"><a href="#cb11-179" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;Damkohler number Da=, scaled sedimentation rate,rhos0/rhow=&#39;</span>,P(<span class="dv">26</span>),P(<span class="dv">23</span>),rhos0<span class="kw">/</span>rhow</span>
-<span id="cb11-180"><a href="#cb11-180" aria-hidden="true" tabindex="-1"></a>           <span class="fu">WRITE(</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;scaled length, position of dissolution zone=&#39;</span>, length<span class="kw">/</span>Xs, xdis<span class="kw">/</span>Xs,(xdis<span class="kw">+</span>Th)<span class="kw">/</span>Xs</span>
-<span id="cb11-181"><a href="#cb11-181" aria-hidden="true" tabindex="-1"></a>           <span class="fu">WRITE(</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;a/Xs,b/Xs, rhosw-1=&#39;</span>,P(<span class="dv">21</span>),P(<span class="dv">28</span>),P(<span class="dv">13</span>)</span>
-<span id="cb11-182"><a href="#cb11-182" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write(</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;1/cXs,Dpor/Dca=&#39;</span>,P(<span class="dv">33</span>),P(<span class="dv">35</span>)</span>
-<span id="cb11-183"><a href="#cb11-183" aria-hidden="true" tabindex="-1"></a>       <span class="kw">return</span></span>
-<span id="cb11-184"><a href="#cb11-184" aria-hidden="true" tabindex="-1"></a>       <span class="kw">end</span></span></code></pre></div>
+<span id="cb11-152"><a href="#cb11-152" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;Xs (cm), Ts (a)&#39;</span>, Xs,Ts</span>
+<span id="cb11-153"><a href="#cb11-153" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;dt,dx,dtS/dx =&#39;</span>, dt,dx,P(<span class="dv">15</span>)<span class="kw">*</span>(P(<span class="dv">23</span>)<span class="kw">/</span>P(<span class="dv">16</span>))</span>
+<span id="cb11-154"><a href="#cb11-154" aria-hidden="true" tabindex="-1"></a>           <span class="fu">WRITE(</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;dx^2/2d=&#39;</span>, P(<span class="dv">16</span>)<span class="kw">**</span><span class="dv">2</span><span class="kw">/</span>(<span class="dv">2</span><span class="kw">*</span>P(<span class="dv">25</span>))</span>
+<span id="cb11-155"><a href="#cb11-155" aria-hidden="true" tabindex="-1"></a>           <span class="kw">IF</span>(P(<span class="dv">15</span>)<span class="kw">*</span>P(<span class="dv">23</span>)<span class="kw">/</span>P(<span class="dv">16</span>)<span class="op">.gt.</span><span class="fl">1.</span><span class="kw">/</span><span class="fl">5.</span>) <span class="kw">then</span></span>
+<span id="cb11-156"><a href="#cb11-156" aria-hidden="true" tabindex="-1"></a>              <span class="fu">WRITE(</span><span class="dv">6</span>,<span class="fu">*)</span><span class="st">&#39; problem: possible instability&#39;</span></span>
+<span id="cb11-157"><a href="#cb11-157" aria-hidden="true" tabindex="-1"></a>           <span class="kw">endif</span></span>
+<span id="cb11-158"><a href="#cb11-158" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;scale for MA, MC =&#39;</span>,rhos0<span class="kw">*</span>cara0<span class="kw">*</span>(<span class="dv">1</span><span class="kw">-</span>phi0), rhos0<span class="kw">*</span><span class="co">ccal0*(1-phi0)</span></span>
+<span id="cb11-159"><a href="#cb11-159" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;scale for c=&#39;</span>,<span class="bu">dsqrt</span>(Kc)</span>
+<span id="cb11-160"><a href="#cb11-160" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;Damkohler number Da=, scaled sedimentation rate,rhos0/rhow=&#39;</span>,P(<span class="dv">26</span>),P(<span class="dv">23</span>),rhos0<span class="kw">/</span>rhow</span>
+<span id="cb11-161"><a href="#cb11-161" aria-hidden="true" tabindex="-1"></a>           <span class="fu">WRITE(</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;scaled length, position of dissolution zone=&#39;</span>, length<span class="kw">/</span>Xs, xdis<span class="kw">/</span>Xs,(xdis<span class="kw">+</span>Th)<span class="kw">/</span>Xs</span>
+<span id="cb11-162"><a href="#cb11-162" aria-hidden="true" tabindex="-1"></a>           <span class="fu">WRITE(</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;a/Xs,b/Xs, rhosw-1=&#39;</span>,P(<span class="dv">21</span>),P(<span class="dv">28</span>),P(<span class="dv">13</span>)</span>
+<span id="cb11-163"><a href="#cb11-163" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write(</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;1/cXs,Dpor/Dca=&#39;</span>,P(<span class="dv">33</span>),P(<span class="dv">35</span>)</span>
+<span id="cb11-164"><a href="#cb11-164" aria-hidden="true" tabindex="-1"></a>       <span class="kw">return</span></span>
+<span id="cb11-165"><a href="#cb11-165" aria-hidden="true" tabindex="-1"></a>       <span class="kw">end</span></span></code></pre></div>
 </div>
 </section>
         </div>

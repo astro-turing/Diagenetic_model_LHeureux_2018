@@ -8,7 +8,7 @@ Run `make` to build the code with `gfortran`. The executable should appear in th
 If you use this code in your work, please cite both the original paper by Ivan L'Heureux and this repository, following the information in CITATION.cff.
 
 ## License
-The maintainers of this package are not affiliated with the original author, but obtained permission to distribute this code under the Apache 2 license.
+The maintainers of this package are not directly affiliated with the original author, but obtained permission to distribute this code under the Apache 2 license.
 
 >  Copyright 2022 Ivan L'Heureux (University of Ottawa), Johan Hidding (Netherlands eScience Center)
 >
@@ -23,3 +23,6 @@ The maintainers of this package are not affiliated with the original author, but
 >   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 >   See the License for the specific language governing permissions and
 >   limitations under the License.
+
+## 3rd party code
+This repository includes the `cfg` parser from [pkgpl/cfgio](https://github.com/pkgpl/cfgio) by Wansoo Ha.
