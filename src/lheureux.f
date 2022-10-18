@@ -105,7 +105,7 @@
            CLOSE(12)
            CLOSE(13)
            write (6,*) 'fini'
-           pause
+           !pause
            stop 'marl'
            end
 !
@@ -786,7 +786,7 @@
                  if (dabs(denom).le.1.d-70) then
                     write (6,*)  'tridag a echoue a i et t=',i,t
                     WRITE(6,*) 'denom,b,c,g=',denom,b(i+2),c(i+2),g(i+2),b(i+1),c(i+1),g(i+1)
-                        pause
+                        !pause
                  endif        
                  g(i)=-a(i+1)/denom
                  h(i)=(r(i+1)-c(i+1)*h(i+1))/denom
@@ -975,7 +975,7 @@
            WRITE(6,*) 'dx^2/2d=', P(16)**2/(2*P(25))
            IF(P(15)*P(23)/P(16).gt.1./5.) then
               WRITE(6,*)' problem: possible instability'
-              pause
+              !pause
            endif
            write (6,*) 'scale for MA, MC =',rhos0*cara0*(1-phi0), rhos0*ccal0*(1-phi0)
            write (6,*) 'scale for c=',dsqrt(Kc)
@@ -986,7 +986,7 @@
 
 
 
-           PAUSE
+           !PAUSE
        return
        end
 
