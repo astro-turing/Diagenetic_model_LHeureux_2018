@@ -5,6 +5,7 @@
 !  Rythmite limestone/marl - semiimplicit diffusion on c,po and explicit advection on M with upwind scheme
 !  Main code
        program marl_PDE
+           use hdf5
            implicit none
            ! ~\~ begin <<lit/index.md|main-declare-variables>>[init]
            REAL*8 pho(0:1000),cao(0:1000),coo(0:1000),ARAo(0:1000),CALo(0:1000),ph(0:1000)
@@ -16,7 +17,15 @@
            REAL*8 sigca(0:1000),sigco(0:1000),Rp(0:1000),te,wap,S(0:1000)
            REAL*8 Sdum(0:1000),Udum(0:1000),sigpo(0:1000)
 
-           INTEGER tmax,j,outx,i,N,outt
+           INTEGER tmax,j,outx,i,N,outt,hdferr
+           INTEGER(HID_T) :: file_handle, space_handle, row_handle, dataset_handle
+           ! CHARACTER(len=1024) :: group_name
+           INTEGER(HSIZE_T), DIMENSION(1:2) :: data_size
+           INTEGER(HSIZE_T), DIMENSION(1:2) :: offset = (/0,0/)
+           INTEGER(HSIZE_T), DIMENSION(1:2) :: stride = (/1,1/)
+           INTEGER(HSIZE_T), DIMENSION(1:2) :: block  = (/1,1/)
+
+           COMMON/io/ file_handle
            COMMON/general/ pho,cao,coo,ARAo,CALo,tmax,outx,outt,N
            COMMON/par/P
            ! ~\~ end
@@ -30,6 +39,28 @@
            ! ~\~ end
            ! ~\~ begin <<lit/index.md|main-initialize>>[init]
            call init
+           data_size(1) = tmax / outt
+           data_size(2) = N
+
+           CALL h5open_f(hdferr)
+           CALL h5fcreate_f("output.h5", H5F_ACC_TRUNC_F, file_handle, hdferr)
+           CALL h5screate_simple_f(2, data_size, space_handle, hdferr)
+           CALL h5dcreate_f(file_handle, "aragonite", H5T_NATIVE_REAL, space_handle, dataset_handle, hdferr)
+           CALL h5dclose_f(dataset_handle, hdferr)
+           CALL h5dcreate_f(file_handle, "calcite", H5T_NATIVE_REAL, space_handle, dataset_handle, hdferr)
+           CALL h5dclose_f(dataset_handle, hdferr)
+           CALL h5dcreate_f(file_handle, "carbonate", H5T_NATIVE_REAL, space_handle, dataset_handle, hdferr)
+           CALL h5dclose_f(dataset_handle, hdferr)
+           CALL h5dcreate_f(file_handle, "calcium", H5T_NATIVE_REAL, space_handle, dataset_handle, hdferr)
+           CALL h5dclose_f(dataset_handle, hdferr)
+           CALL h5dcreate_f(file_handle, "porosity", H5T_NATIVE_REAL, space_handle, dataset_handle, hdferr)
+           CALL h5dclose_f(dataset_handle, hdferr)
+           CALL h5sclose_f(space_handle, hdferr)
+
+           ! limit hdf5 data space to one row at a time
+           data_size(1) = 1
+           CALL h5screate_simple_f(2, data_size, row_handle, hdferr)
+
            dt=P(15)
            dx=P(16)
            do i=0,N
@@ -72,7 +103,41 @@
                t=t+dt
                call auxf(t,n,ph,ca,co,ARA,CAL,U,S,W,OC,OA,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,RAR,RCAL)
                ! ~\~ begin <<lit/index.md|write-output>>[init]
+               ! hdf5 output
                IF(j/outt*outt.eq.j) THEN
+                  call h5dopen_f(file_handle, "aragonite", dataset_handle, hdferr)
+                  call h5dget_space_f(dataset_handle, space_handle, hdferr)
+                  call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr, stride, block)
+                  call h5dwrite_f(dataset_handle, H5T_NATIVE_REAL, ara, data_size, hdferr, row_handle, space_handle)
+                  call h5sclose_f(space_handle, hdferr)
+                  call h5dclose_f(dataset_handle, hdferr)
+                  call h5dopen_f(file_handle, "calcite", dataset_handle, hdferr)
+                  call h5dget_space_f(dataset_handle, space_handle, hdferr)
+                  call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
+                  call h5dwrite_f(dataset_handle, H5T_NATIVE_REAL, cal, data_size, hdferr, row_handle, space_handle)
+                  call h5sclose_f(space_handle, hdferr)
+                  call h5dclose_f(dataset_handle, hdferr)
+                  call h5dopen_f(file_handle, "carbonate", dataset_handle, hdferr)
+                  call h5dget_space_f(dataset_handle, space_handle, hdferr)
+                  call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
+                  call h5dwrite_f(dataset_handle, H5T_NATIVE_REAL, co, data_size, hdferr, row_handle, space_handle)
+                  call h5sclose_f(space_handle, hdferr)
+                  call h5dclose_f(dataset_handle, hdferr)
+                  call h5dopen_f(file_handle, "calcium", dataset_handle, hdferr)
+                  call h5dget_space_f(dataset_handle, space_handle, hdferr)
+                  call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
+                  call h5dwrite_f(dataset_handle, H5T_NATIVE_REAL, ca, data_size, hdferr, row_handle, space_handle)
+                  call h5sclose_f(space_handle, hdferr)
+                  call h5dclose_f(dataset_handle, hdferr)
+                  call h5dopen_f(file_handle, "porosity", dataset_handle, hdferr)
+                  call h5dget_space_f(dataset_handle, space_handle, hdferr)
+                  call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
+                  call h5dwrite_f(dataset_handle, H5T_NATIVE_REAL, ph, data_size, hdferr, row_handle, space_handle)
+                  call h5sclose_f(space_handle, hdferr)
+                  call h5dclose_f(dataset_handle, hdferr)
+                  offset(1) = offset(1) + 1
+               ! ~\~ end
+               ! ~\~ begin <<lit/index.md|write-output>>[1]
                    WRITE (12,100) t,ara(N/4),ara(N/2),ara(3*N/4),ara(N),cal(N/4),&
                    & cal(N/2),cal(3*N/4),cal(N),ph(N/4),ph(N/2),ph(3*N/4),ph(N),&
                    & ca(N/4),ca(N/2),ca(3*N/4),ca(N),co(N/4),co(N/2),co(3*N/4),&
@@ -119,6 +184,9 @@
            CLOSE(11)
            CLOSE(12)
            CLOSE(13)
+           CALL h5sclose_f(row_handle, hdferr)
+           CALL h5fclose_f(file_handle, hdferr)
+           CALL h5close_f(hdferr)
            write (6,*) 'fini'
            stop 'marl'
        end program

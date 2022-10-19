@@ -824,8 +824,8 @@
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !           LAX=0
-           dt=1.d-3
-           dt=1.d-6
+           ! dt=1.d-3
+           dt=5.d-6
         
            
  !          length=2000.
@@ -839,8 +839,8 @@
            
            eps=1.d-2
        
-           tmax=12
-           outt=1
+           tmax=200000
+           outt=1000
            
            
            
@@ -876,7 +876,7 @@
            cAthy=0.1
          
 !           phiinf=0.05
-           phiinf=0.3
+           phiinf=0.7
            phiinf=eps
 !  new incoming sediment          
             phi0=0.7 

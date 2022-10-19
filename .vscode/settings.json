@@ -1,0 +1,5 @@
+{
+    "fortran.fortls.configure": ".fortls",
+    "fortran.linter.modOutput": "./build/",
+    "fortran.linter.includePaths": ["/usr/lib64/gfortran/modules/","./build"]
+}

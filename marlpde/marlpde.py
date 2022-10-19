@@ -5,6 +5,7 @@ import configparser
 from pathlib import Path
 from dataclasses import (dataclass, asdict)
 from subprocess import (run)
+import h5py as h5
 
 @dataclass
 class Scenario:
@@ -34,16 +35,16 @@ class Scenario:
 
 @dataclass
 class Solver:
-    dt: float     = 1.e-6
+    dt: float     = 5.e-6
     xdis: float   = 50.0
     xcem: float   = -100.0
     xcemf: float  = 1000.0
     length: float = 500.0
     eps: float    = 1.e-2
     Th: float     = 100.0
-    tmax: int     = 12
-    outt: int     = 1
-    outx: int     = 3
+    tmax: int     = 20_000
+    outt: int     =  1_000
+    outx: int     = 50_000
     N: int        = 200
 
 def write_input_cfg(path: Path, solver: Solver, scenario: Scenario):
@@ -55,9 +56,9 @@ def write_input_cfg(path: Path, solver: Solver, scenario: Scenario):
     with open(path / "input.cfg", "w") as f_cfg:
         cfg.write(f_cfg)
 
-def run_marl_pde(path: Path):
-    run("marl-pde", cwd=path, check=True)
+def run_marl_pde(path: Path, exe_dir: Path = Path(".")):
+    run(exe_dir / "marl-pde", cwd=path, check=True)
 
-def parse_output(path: Path):
-    snapshots = path.glob("amart*")
+def output_data(path: Path):
+    return h5.File(path / "output.h5", mode="r")
 # ~\~ end
