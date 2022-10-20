@@ -353,31 +353,31 @@
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dopen_f(file_handle, <span class="st">&quot;aragonite&quot;</span>, dataset_handle, hdferr)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dget_space_f(dataset_handle, space_handle, hdferr)</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr, stride, block)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dwrite_f(dataset_handle, H5T_NATIVE_REAL, ara, data_size, hdferr, row_handle, space_handle)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, ara, data_size, hdferr, row_handle, space_handle)</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5sclose_f(space_handle, hdferr)</span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dclose_f(dataset_handle, hdferr)</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dopen_f(file_handle, <span class="st">&quot;calcite&quot;</span>, dataset_handle, hdferr)</span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dget_space_f(dataset_handle, space_handle, hdferr)</span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dwrite_f(dataset_handle, H5T_NATIVE_REAL, cal, data_size, hdferr, row_handle, space_handle)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, cal, data_size, hdferr, row_handle, space_handle)</span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5sclose_f(space_handle, hdferr)</span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dclose_f(dataset_handle, hdferr)</span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dopen_f(file_handle, <span class="st">&quot;carbonate&quot;</span>, dataset_handle, hdferr)</span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dget_space_f(dataset_handle, space_handle, hdferr)</span>
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dwrite_f(dataset_handle, H5T_NATIVE_REAL, co, data_size, hdferr, row_handle, space_handle)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, co, data_size, hdferr, row_handle, space_handle)</span>
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5sclose_f(space_handle, hdferr)</span>
 <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dclose_f(dataset_handle, hdferr)</span>
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dopen_f(file_handle, <span class="st">&quot;calcium&quot;</span>, dataset_handle, hdferr)</span>
 <span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dget_space_f(dataset_handle, space_handle, hdferr)</span>
 <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dwrite_f(dataset_handle, H5T_NATIVE_REAL, ca, data_size, hdferr, row_handle, space_handle)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, ca, data_size, hdferr, row_handle, space_handle)</span>
 <span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5sclose_f(space_handle, hdferr)</span>
 <span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dclose_f(dataset_handle, hdferr)</span>
 <span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dopen_f(file_handle, <span class="st">&quot;porosity&quot;</span>, dataset_handle, hdferr)</span>
 <span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dget_space_f(dataset_handle, space_handle, hdferr)</span>
 <span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dwrite_f(dataset_handle, H5T_NATIVE_REAL, ph, data_size, hdferr, row_handle, space_handle)</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, ph, data_size, hdferr, row_handle, space_handle)</span>
 <span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5sclose_f(space_handle, hdferr)</span>
 <span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>   <span class="kw">call</span> h5dclose_f(dataset_handle, hdferr)</span>
 <span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>   offset(<span class="dv">1</span>) <span class="kw">=</span> offset(<span class="dv">1</span>) <span class="kw">+</span> <span class="dv">1</span></span></code></pre></div>
@@ -470,8 +470,8 @@
 <span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>                    dpdx<span class="kw">=</span>(ph(<span class="dv">1</span>)<span class="kw">-</span>ph(<span class="dv">0</span>))<span class="kw">/</span>dx</span>
 <span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>                    dpdx<span class="kw">=</span><span class="fl">0.</span></span>
 <span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>                    dpdx<span class="kw">=</span>dpdx</span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>                    w(<span class="dv">0</span>)<span class="kw">=</span>u(<span class="dv">0</span>)<span class="kw">-</span>k(<span class="dv">0</span>)<span class="kw">*</span>(rhosw0<span class="kw">-</span><span class="dv">1</span>)<span class="kw">/</span>ph(<span class="dv">0</span>)</span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a> <span class="co">!                   w(0)=u(0)-k(0)*(rhosw0-1)/ph(0)*(1+dpdx*P(33)/(ph(0)-P(34)))</span></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a> <span class="co">!                   w(0)=u(0)-k(0)*(rhosw0-1)/ph(0)</span></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>                    w(<span class="dv">0</span>)<span class="kw">=</span>u(<span class="dv">0</span>)<span class="kw">-</span>k(<span class="dv">0</span>)<span class="kw">*</span>(rhosw0<span class="kw">-</span><span class="dv">1</span>)<span class="kw">/</span>ph(<span class="dv">0</span>)<span class="kw">*</span>(<span class="dv">1</span><span class="kw">+</span>dpdx<span class="kw">*</span>P(<span class="dv">33</span>)<span class="kw">/</span>(ph(<span class="dv">0</span>)<span class="co">-P(34)))</span></span>
 <span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a> <span class="co">!                   </span></span>
 <span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a> <span class="co">!                                    </span></span>
@@ -638,7 +638,7 @@
 <span id="cb6-203"><a href="#cb6-203" aria-hidden="true" tabindex="-1"></a> <span class="co">!  approx u(i)=S                          </span></span>
 <span id="cb6-204"><a href="#cb6-204" aria-hidden="true" tabindex="-1"></a> <span class="co">!                          u(i)=P(23)</span></span>
 <span id="cb6-205"><a href="#cb6-205" aria-hidden="true" tabindex="-1"></a>                           w(i)<span class="kw">=</span>u(i)<span class="kw">-</span>k(i)<span class="kw">*</span>(rhosw0<span class="kw">-</span><span class="dv">1</span>)<span class="kw">/</span>ph(i)</span>
-<span id="cb6-206"><a href="#cb6-206" aria-hidden="true" tabindex="-1"></a> <span class="co">!                          w(i)=u(i)-k(i)*(rhosw0-1)/ph(i)*(1+dpdx*P(33)/(ph(i)-P(34)))</span></span>
+<span id="cb6-206"><a href="#cb6-206" aria-hidden="true" tabindex="-1"></a> <span class="co">!                         w(i)=u(i)-k(i)*(rhosw0-1)/ph(i)*(1+dpdx*P(33)/(ph(i)-P(34)))</span></span>
 <span id="cb6-207"><a href="#cb6-207" aria-hidden="true" tabindex="-1"></a> <span class="co">!</span></span>
 <span id="cb6-208"><a href="#cb6-208" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-209"><a href="#cb6-209" aria-hidden="true" tabindex="-1"></a>  <span class="co">!                        </span></span>
@@ -712,13 +712,13 @@
 <span id="cb6-277"><a href="#cb6-277" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-278"><a href="#cb6-278" aria-hidden="true" tabindex="-1"></a><span class="co">!  velocity u,w</span></span>
 <span id="cb6-279"><a href="#cb6-279" aria-hidden="true" tabindex="-1"></a>                              u(i)<span class="kw">=</span>k(i)<span class="kw">*</span>(rhosw0<span class="kw">-</span><span class="dv">1</span>)<span class="kw">+</span>P(<span class="dv">23</span>)<span class="kw">-</span>P(<span class="dv">13</span>)<span class="kw">*</span>k(<span class="dv">0</span>)</span>
-<span id="cb6-280"><a href="#cb6-280" aria-hidden="true" tabindex="-1"></a>                      w(i)<span class="kw">=</span>u(i)<span class="kw">-</span>k(i)<span class="kw">*</span>(rhosw0<span class="kw">-</span><span class="dv">1</span>)<span class="kw">/</span>ph(i)</span>
+<span id="cb6-280"><a href="#cb6-280" aria-hidden="true" tabindex="-1"></a>                      <span class="co">! w(i)=u(i)-k(i)*(rhosw0-1)/ph(i)</span></span>
 <span id="cb6-281"><a href="#cb6-281" aria-hidden="true" tabindex="-1"></a><span class="co">!  approx  u(i)=S               </span></span>
 <span id="cb6-282"><a href="#cb6-282" aria-hidden="true" tabindex="-1"></a> <span class="co">!                     u(i)=P(23)     </span></span>
 <span id="cb6-283"><a href="#cb6-283" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-284"><a href="#cb6-284" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-285"><a href="#cb6-285" aria-hidden="true" tabindex="-1"></a>                      w(i)<span class="kw">=</span>P(<span class="dv">23</span>)<span class="kw">-</span>k(i)<span class="kw">*</span>(rhosw0<span class="kw">-</span><span class="dv">1</span>)<span class="kw">/</span>ph(i)</span>
-<span id="cb6-286"><a href="#cb6-286" aria-hidden="true" tabindex="-1"></a><span class="co">!                       w(i)=u(i)-k(i)*(rhosw0-1)/ph(i)*(1+dpdx*P(33)/(ph(i)-P(34)))</span></span>
+<span id="cb6-286"><a href="#cb6-286" aria-hidden="true" tabindex="-1"></a>                      <span class="co">! w(i)=u(i)-k(i)*(rhosw0-1)/ph(i)*(1+dpdx*P(33)/(ph(i)-P(34)))</span></span>
 <span id="cb6-287"><a href="#cb6-287" aria-hidden="true" tabindex="-1"></a>  <span class="co">!                    </span></span>
 <span id="cb6-288"><a href="#cb6-288" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-289"><a href="#cb6-289" aria-hidden="true" tabindex="-1"></a></span>
@@ -900,47 +900,37 @@ k_{i+1/2} &amp;= k_i - a w_i ((1-{\rm sig}k_i) k_{i+1} + 2({\rm sig}k_i)k_i - (1
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>           dt<span class="kw">=</span>P(<span class="dv">15</span>)</span>
 <span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>           a<span class="kw">=</span>dt<span class="kw">/</span>dx</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>           ARAnew(<span class="dv">0</span>)<span class="kw">=</span>ARA(<span class="dv">0</span>)</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>           CALnew(<span class="dv">0</span>)<span class="kw">=</span>CAL(<span class="dv">0</span>)</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>           <span class="kw">do</span> <span class="dv">30</span> i<span class="kw">=</span><span class="dv">1</span>,n<span class="kw">-</span><span class="dv">1</span></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>             ARANEW(i)<span class="kw">=</span>ARA(i)<span class="kw">-</span>a<span class="kw">*</span>u(i)<span class="kw">*</span>(ARA(i)<span class="kw">*</span>S(i)<span class="kw">-</span>ARA(i<span class="kw">-</span><span class="dv">1</span>)<span class="kw">*</span><span class="fl">0.5</span><span class="kw">*</span>(S(i)<span class="kw">+</span><span class="fl">1.</span>)<span class="co">+ARA(i+1)*0.5*(1.-S(i)))&amp;</span></span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a> <span class="kw">&amp;</span>              <span class="kw">+</span>dt<span class="kw">*</span>RAR(i)</span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>             CALNEW(i)<span class="kw">=</span>CAL(i)<span class="kw">-</span>a<span class="kw">*</span>u(i)<span class="kw">*</span>(CAL(i)<span class="kw">*</span>S(i)<span class="kw">-</span>CAL(i<span class="kw">-</span><span class="dv">1</span>)<span class="kw">*</span><span class="fl">0.5</span><span class="kw">*</span>(S(i)<span class="kw">+</span><span class="fl">1.</span>)<span class="co">+CAL(i+1)*0.5*(1.-S(i)))&amp;</span></span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a> <span class="kw">&amp;</span>               <span class="kw">+</span>dt<span class="kw">*</span>RCAL(i)</span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(<span class="dv">1</span><span class="kw">-</span>ARAnew(i)<span class="kw">-</span>CALnew(i)<span class="op">.lt.</span><span class="fl">1.d-70</span>) ARAnew(i)<span class="kw">=</span><span class="dv">1</span><span class="kw">-</span>CALnew(i)</span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(<span class="dv">1</span><span class="kw">-</span>CALnew(i)<span class="op">.lt.</span><span class="fl">1.d-10</span>) CALnew(i)<span class="kw">=</span><span class="fl">1.</span></span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(<span class="dv">1</span><span class="kw">-</span>ARAnew(i)<span class="op">.lt.</span><span class="fl">1.d-10</span>) ARAnew(i)<span class="kw">=</span><span class="fl">1.</span></span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(ARAnew(i)<span class="op">.lt.</span><span class="fl">1.d-70</span>) ARAnew(i)<span class="kw">=</span><span class="fl">0.</span></span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(CALnew(i)<span class="op">.lt.</span><span class="fl">1.d-70</span>) CALnew(i)<span class="kw">=</span><span class="fl">0.</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>           ARAnew(<span class="dv">0</span>)<span class="kw">=</span>ARA(<span class="dv">0</span>)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>           CALnew(<span class="dv">0</span>)<span class="kw">=</span>CAL(<span class="dv">0</span>)</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>           <span class="kw">do</span> i<span class="kw">=</span><span class="dv">1</span>,n<span class="kw">-</span><span class="dv">1</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>             ARANEW(i)<span class="kw">=</span>ARA(i)<span class="kw">-</span>a<span class="kw">*</span>u(i)<span class="kw">*</span>(ARA(i)<span class="kw">*</span>S(i)<span class="kw">-</span>ARA(i<span class="kw">-</span><span class="dv">1</span>)<span class="kw">*</span><span class="fl">0.5</span><span class="kw">*</span>(S(i)<span class="kw">+</span><span class="fl">1.</span>)<span class="co">+ARA(i+1)*0.5*(1.-S(i)))&amp;</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a> <span class="kw">&amp;</span>              <span class="kw">+</span>dt<span class="kw">*</span>RAR(i)</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>             CALNEW(i)<span class="kw">=</span>CAL(i)<span class="kw">-</span>a<span class="kw">*</span>u(i)<span class="kw">*</span>(CAL(i)<span class="kw">*</span>S(i)<span class="kw">-</span>CAL(i<span class="kw">-</span><span class="dv">1</span>)<span class="kw">*</span><span class="fl">0.5</span><span class="kw">*</span>(S(i)<span class="kw">+</span><span class="fl">1.</span>)<span class="co">+CAL(i+1)*0.5*(1.-S(i)))&amp;</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a> <span class="kw">&amp;</span>               <span class="kw">+</span>dt<span class="kw">*</span>RCAL(i)</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(<span class="dv">1</span><span class="kw">-</span>ARAnew(i)<span class="kw">-</span>CALnew(i)<span class="op">.lt.</span><span class="fl">1.d-70</span>) ARAnew(i)<span class="kw">=</span><span class="dv">1</span><span class="kw">-</span>CALnew(i)</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(<span class="dv">1</span><span class="kw">-</span>CALnew(i)<span class="op">.lt.</span><span class="fl">1.d-10</span>) CALnew(i)<span class="kw">=</span><span class="fl">1.</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(<span class="dv">1</span><span class="kw">-</span>ARAnew(i)<span class="op">.lt.</span><span class="fl">1.d-10</span>) ARAnew(i)<span class="kw">=</span><span class="fl">1.</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(ARAnew(i)<span class="op">.lt.</span><span class="fl">1.d-70</span>) ARAnew(i)<span class="kw">=</span><span class="fl">0.</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(CALnew(i)<span class="op">.lt.</span><span class="fl">1.d-70</span>) CALnew(i)<span class="kw">=</span><span class="fl">0.</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>           <span class="kw">end do</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>             ARAnew(n)<span class="kw">=</span>ARA(n)<span class="kw">-</span>a<span class="kw">*</span>u(n)<span class="kw">*</span>S(n)<span class="kw">*</span>(ARA(n)<span class="kw">-</span>ARA(n<span class="kw">-</span><span class="dv">1</span>))<span class="kw">+</span>dt<span class="kw">*</span>RAR(n)</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>             CALnew(n)<span class="kw">=</span>CAL(n)<span class="kw">-</span>a<span class="kw">*</span>u(n)<span class="kw">*</span>S(n)<span class="kw">*</span>(CAL(n)<span class="kw">-</span>CAL(n<span class="kw">-</span><span class="dv">1</span>))<span class="kw">+</span>dt<span class="kw">*</span>RCAL(n)</span>
 <span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a><span class="dv">30</span>         <span class="kw">continue</span></span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>             ARAnew(n)<span class="kw">=</span>ARA(n)<span class="kw">-</span>a<span class="kw">*</span>u(n)<span class="kw">*</span>S(n)<span class="kw">*</span>(ARA(n)<span class="kw">-</span>ARA(n<span class="kw">-</span><span class="dv">1</span>))<span class="kw">+</span>dt<span class="kw">*</span>RAR(n)</span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>             CALnew(n)<span class="kw">=</span>CAL(n)<span class="kw">-</span>a<span class="kw">*</span>u(n)<span class="kw">*</span>S(n)<span class="kw">*</span>(CAL(n)<span class="kw">-</span>CAL(n<span class="kw">-</span><span class="dv">1</span>))<span class="kw">+</span>dt<span class="kw">*</span>RCAL(n)</span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(<span class="dv">1</span><span class="kw">-</span>ARAnew(n)<span class="kw">-</span>CALnew(n)<span class="op">.lt.</span><span class="fl">1.d-70</span>) ARAnew(n)<span class="kw">=</span><span class="dv">1</span><span class="kw">-</span>CALnew(n)</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(<span class="dv">1</span><span class="kw">-</span>CALnew(n)<span class="op">.lt.</span><span class="fl">1.d-10</span>) CALnew(n)<span class="kw">=</span><span class="fl">1.</span></span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(<span class="dv">1</span><span class="kw">-</span>ARAnew(n)<span class="op">.lt.</span><span class="fl">1.d-10</span>) ARAnew(n)<span class="kw">=</span><span class="fl">1.</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(ARAnew(n)<span class="op">.lt.</span><span class="fl">1.d-70</span>) ARAnew(n)<span class="kw">=</span><span class="fl">0.</span></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(CALnew(n)<span class="op">.lt.</span><span class="fl">1.d-70</span>) CALnew(n)<span class="kw">=</span><span class="fl">0.</span></span>
 <span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(<span class="dv">1</span><span class="kw">-</span>ARAnew(n)<span class="kw">-</span>CALnew(n)<span class="op">.lt.</span><span class="fl">1.d-70</span>) ARAnew(n)<span class="kw">=</span><span class="dv">1</span><span class="kw">-</span>CALnew(n)</span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(<span class="dv">1</span><span class="kw">-</span>CALnew(n)<span class="op">.lt.</span><span class="fl">1.d-10</span>) CALnew(n)<span class="kw">=</span><span class="fl">1.</span></span>
-<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(<span class="dv">1</span><span class="kw">-</span>ARAnew(n)<span class="op">.lt.</span><span class="fl">1.d-10</span>) ARAnew(n)<span class="kw">=</span><span class="fl">1.</span></span>
-<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(ARAnew(n)<span class="op">.lt.</span><span class="fl">1.d-70</span>) ARAnew(n)<span class="kw">=</span><span class="fl">0.</span></span>
-<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>             <span class="kw">if</span>(CALnew(n)<span class="op">.lt.</span><span class="fl">1.d-70</span>) CALnew(n)<span class="kw">=</span><span class="fl">0.</span></span>
-<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a><span class="co">!    update</span></span>
-<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>             <span class="kw">do</span> <span class="dv">44</span> i<span class="kw">=</span><span class="dv">0</span>,n</span>
-<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a>                ARA(i)<span class="kw">=</span>ARAnew(i)</span>
-<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>                CAL(i)<span class="kw">=</span>CALnew(i)</span>
-<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a><span class="dv">44</span>           <span class="kw">continue</span>                                 </span>
-<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>           <span class="kw">return</span></span>
-<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>           <span class="kw">end</span></span></code></pre></div>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a><span class="co">!    update</span></span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>             <span class="kw">do</span> i<span class="kw">=</span><span class="dv">0</span>,n</span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>                ARA(i)<span class="kw">=</span>ARAnew(i)</span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>                CAL(i)<span class="kw">=</span>CALnew(i)</span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>             <span class="kw">end do</span></span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>           <span class="kw">return</span></span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>           <span class="kw">end</span></span></code></pre></div>
 </div>
 </section>
 <section id="crank-nicolson" class="level1">
@@ -1142,7 +1132,7 @@ k_{i+1/2} &amp;= k_i - a w_i ((1-{\rm sig}k_i) k_{i+1} + 2({\rm sig}k_i)k_i - (1
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>           <span class="dt">real*8</span> pho(<span class="dv">0</span>:<span class="dv">1000</span>),cao(<span class="dv">0</span>:<span class="dv">1000</span>),coo(<span class="dv">0</span>:<span class="dv">1000</span>),ARAo(<span class="dv">0</span>:<span class="dv">1000</span>),CALo(<span class="co">0:1000)</span></span>
 <span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>           <span class="dt">REAL*8</span> dt,dx, P(<span class="dv">35</span>),Th,mua,rhoa,rhoc,rhot,rhow,D0ca,D0co3,Ka,<span class="co">Kc,beta,k1,k2,k3,length,xdis</span></span>
 <span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>           <span class="dt">REAL*8</span> m,nn,S,phi0,ca0,co30,ccal0,cara0,a,b,Vscale,rhos0,Xs,Ts,eps,xcem,xcemf</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>           <span class="dt">real*8</span> phiinf,cAthy</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>           <span class="dt">real*8</span> phiinf,cAthy,phiin</span>
 <span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">!           REAL*8 arg,tgh</span></span>
 <span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>           <span class="dt">integer</span> tmax,N,outt,i,outx</span>
 <span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>           <span class="kw">COMMON/</span>general<span class="kw">/</span> pho,cao,coo, ARAo,CALo,tmax,outx,outt, N</span>
@@ -1163,48 +1153,48 @@ k_{i+1/2} &amp;= k_i - a w_i ((1-{\rm sig}k_i) k_{i+1} + 2({\rm sig}k_i)k_i - (1
 <span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a><span class="co">!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span></span>
 <span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a><span class="co">!           LAX=0</span></span>
 <span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;dt&quot;</span>, dt)</span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;xdis&quot;</span>, xdis)</span>
-<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;xcem&quot;</span>, xcem)</span>
-<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;xcemf&quot;</span>, xcemf)</span>
-<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;length&quot;</span>, length)</span>
-<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;eps&quot;</span>, eps)</span>
-<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;Th&quot;</span>, Th)</span>
-<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;tmax&quot;</span>, tmax)</span>
-<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;outt&quot;</span>, outt)</span>
-<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;outx&quot;</span>, outx)</span>
-<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;N&quot;</span>, N)</span>
-<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>           <span class="co">! dt=1.d-6</span></span>
-<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>           <span class="co">! length=2000.</span></span>
-<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>           <span class="co">! xdis=50.</span></span>
-<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>           <span class="co">! xcem=-100.</span></span>
-<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>           <span class="co">! xcemf=1000.</span></span>
-<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>           <span class="co">! length=500.</span></span>
-<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>           <span class="co">!   Th=100.</span></span>
-<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>           <span class="co">!   eps=1.d-2</span></span>
-<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>           <span class="co">!   tmax=12</span></span>
-<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>           <span class="co">!   outt=1</span></span>
-<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>           <span class="co">!   outx=tmax/4</span></span>
-<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>           <span class="co">!   N=200</span></span>
-<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;mua&quot;</span>, mua)</span>
-<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>           <span class="co">! call cfg%get(&quot;Scenario&quot;, &quot;muw&quot;, muw) not used</span></span>
-<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;rhoa&quot;</span>, rhoa)</span>
-<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;rhoc&quot;</span>, rhoc)</span>
-<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;rhot&quot;</span>, rhot)</span>
-<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;rhow&quot;</span>, rhow)</span>
-<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;D0ca&quot;</span>, D0ca)</span>
-<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;D0co3&quot;</span>, D0co3)</span>
-<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;Ka&quot;</span>, Ka)</span>
-<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;Kc&quot;</span>, Kc)</span>
-<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;beta&quot;</span>, beta)</span>
-<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;k1&quot;</span>, k1)</span>
-<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;k2&quot;</span>, k2)</span>
-<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;k3&quot;</span>, k3)</span>
-<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;nn&quot;</span>, nn)</span>
-<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;m&quot;</span>, m)</span>
-<span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;S&quot;</span>, S)</span>
-<span id="cb12-71"><a href="#cb12-71" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;cAthy&quot;</span>, cAthy)</span>
-<span id="cb12-72"><a href="#cb12-72" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;phiinf&quot;</span>, phiinf)</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;eps&quot;</span>, eps)</span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;tmax&quot;</span>, tmax)</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;outt&quot;</span>, outt)</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;outx&quot;</span>, outx)</span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Solver&quot;</span>, <span class="st">&quot;N&quot;</span>, N)</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>           <span class="co">! dt=1.d-6</span></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>           <span class="co">! length=2000.</span></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>           <span class="co">! xdis=50.</span></span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>           <span class="co">! xcem=-100.</span></span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>           <span class="co">! xcemf=1000.</span></span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>           <span class="co">! length=500.</span></span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>           <span class="co">!   Th=100.</span></span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>           <span class="co">!   eps=1.d-2</span></span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>           <span class="co">!   tmax=12</span></span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>           <span class="co">!   outt=1</span></span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>           <span class="co">!   outx=tmax/4</span></span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>           <span class="co">!   N=200</span></span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;xdis&quot;</span>, xdis)</span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;xcem&quot;</span>, xcem)</span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;xcemf&quot;</span>, xcemf)</span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;length&quot;</span>, length)</span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;Th&quot;</span>, Th)</span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;mua&quot;</span>, mua)</span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>           <span class="co">! call cfg%get(&quot;Scenario&quot;, &quot;muw&quot;, muw) not used</span></span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;rhoa&quot;</span>, rhoa)</span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;rhoc&quot;</span>, rhoc)</span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;rhot&quot;</span>, rhot)</span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;rhow&quot;</span>, rhow)</span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;D0ca&quot;</span>, D0ca)</span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;D0co3&quot;</span>, D0co3)</span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;Ka&quot;</span>, Ka)</span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;Kc&quot;</span>, Kc)</span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;beta&quot;</span>, beta)</span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;k1&quot;</span>, k1)</span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;k2&quot;</span>, k2)</span>
+<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;k3&quot;</span>, k3)</span>
+<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;nn&quot;</span>, nn)</span>
+<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;m&quot;</span>, m)</span>
+<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;S&quot;</span>, S)</span>
+<span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;cAthy&quot;</span>, cAthy)</span>
+<span id="cb12-71"><a href="#cb12-71" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;phiinf&quot;</span>, phiinf)</span>
+<span id="cb12-72"><a href="#cb12-72" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;phiin&quot;</span>, phiin)</span>
 <span id="cb12-73"><a href="#cb12-73" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;phi0&quot;</span>, phi0)</span>
 <span id="cb12-74"><a href="#cb12-74" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;ca0&quot;</span>, ca0)</span>
 <span id="cb12-75"><a href="#cb12-75" aria-hidden="true" tabindex="-1"></a>           <span class="kw">call</span> cfg%get(<span class="st">&quot;Scenario&quot;</span>, <span class="st">&quot;co30&quot;</span>, co30)</span>
@@ -1278,27 +1268,28 @@ k_{i+1/2} &amp;= k_i - a w_i ((1-{\rm sig}k_i) k_{i+1} + 2({\rm sig}k_i)k_i - (1
 <span id="cb12-143"><a href="#cb12-143" aria-hidden="true" tabindex="-1"></a><span class="co">! Initial conditions (dimensionless)</span></span>
 <span id="cb12-144"><a href="#cb12-144" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-145"><a href="#cb12-145" aria-hidden="true" tabindex="-1"></a>           <span class="kw">do</span> i<span class="kw">=</span><span class="dv">0</span>,N</span>
-<span id="cb12-146"><a href="#cb12-146" aria-hidden="true" tabindex="-1"></a>            pho(i)<span class="kw">=</span>phi0</span>
+<span id="cb12-146"><a href="#cb12-146" aria-hidden="true" tabindex="-1"></a>            pho(i)<span class="kw">=</span>phiin</span>
 <span id="cb12-147"><a href="#cb12-147" aria-hidden="true" tabindex="-1"></a>            cao(i)<span class="kw">=</span>ca0<span class="kw">/</span><span class="bu">dsqrt</span>(Kc)</span>
 <span id="cb12-148"><a href="#cb12-148" aria-hidden="true" tabindex="-1"></a>            coo(i)<span class="kw">=</span>co30<span class="kw">/</span><span class="bu">dsqrt</span>(Kc)</span>
 <span id="cb12-149"><a href="#cb12-149" aria-hidden="true" tabindex="-1"></a>            ARAo(i)<span class="kw">=</span>cara0</span>
 <span id="cb12-150"><a href="#cb12-150" aria-hidden="true" tabindex="-1"></a>            CALo(i)<span class="kw">=</span>ccal0</span>
 <span id="cb12-151"><a href="#cb12-151" aria-hidden="true" tabindex="-1"></a>           <span class="kw">end do</span></span>
-<span id="cb12-152"><a href="#cb12-152" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-153"><a href="#cb12-153" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;Xs (cm), Ts (a)&#39;</span>, Xs,Ts</span>
-<span id="cb12-154"><a href="#cb12-154" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;dt,dx,dtS/dx =&#39;</span>, dt,dx,P(<span class="dv">15</span>)<span class="kw">*</span>(P(<span class="dv">23</span>)<span class="kw">/</span>P(<span class="dv">16</span>))</span>
-<span id="cb12-155"><a href="#cb12-155" aria-hidden="true" tabindex="-1"></a>           <span class="fu">WRITE(</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;dx^2/2d=&#39;</span>, P(<span class="dv">16</span>)<span class="kw">**</span><span class="dv">2</span><span class="kw">/</span>(<span class="dv">2</span><span class="kw">*</span>P(<span class="dv">25</span>))</span>
-<span id="cb12-156"><a href="#cb12-156" aria-hidden="true" tabindex="-1"></a>           <span class="kw">IF</span>(P(<span class="dv">15</span>)<span class="kw">*</span>P(<span class="dv">23</span>)<span class="kw">/</span>P(<span class="dv">16</span>)<span class="op">.gt.</span><span class="fl">1.</span><span class="kw">/</span><span class="fl">5.</span>) <span class="kw">then</span></span>
-<span id="cb12-157"><a href="#cb12-157" aria-hidden="true" tabindex="-1"></a>              <span class="fu">WRITE(</span><span class="dv">6</span>,<span class="fu">*)</span><span class="st">&#39; problem: possible instability&#39;</span></span>
-<span id="cb12-158"><a href="#cb12-158" aria-hidden="true" tabindex="-1"></a>           <span class="kw">endif</span></span>
-<span id="cb12-159"><a href="#cb12-159" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;scale for MA, MC =&#39;</span>,rhos0<span class="kw">*</span>cara0<span class="kw">*</span>(<span class="dv">1</span><span class="kw">-</span>phi0), rhos0<span class="kw">*</span><span class="co">ccal0*(1-phi0)</span></span>
-<span id="cb12-160"><a href="#cb12-160" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;scale for c=&#39;</span>,<span class="bu">dsqrt</span>(Kc)</span>
-<span id="cb12-161"><a href="#cb12-161" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;Damkohler number Da=, scaled sedimentation rate,rhos0/rhow=&#39;</span>,P(<span class="dv">26</span>),P(<span class="dv">23</span>),rhos0<span class="kw">/</span>rhow</span>
-<span id="cb12-162"><a href="#cb12-162" aria-hidden="true" tabindex="-1"></a>           <span class="fu">WRITE(</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;scaled length, position of dissolution zone=&#39;</span>, length<span class="kw">/</span>Xs, xdis<span class="kw">/</span>Xs,(xdis<span class="kw">+</span>Th)<span class="kw">/</span>Xs</span>
-<span id="cb12-163"><a href="#cb12-163" aria-hidden="true" tabindex="-1"></a>           <span class="fu">WRITE(</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;a/Xs,b/Xs, rhosw-1=&#39;</span>,P(<span class="dv">21</span>),P(<span class="dv">28</span>),P(<span class="dv">13</span>)</span>
-<span id="cb12-164"><a href="#cb12-164" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write(</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;1/cXs,Dpor/Dca=&#39;</span>,P(<span class="dv">33</span>),P(<span class="dv">35</span>)</span>
-<span id="cb12-165"><a href="#cb12-165" aria-hidden="true" tabindex="-1"></a>       <span class="kw">return</span></span>
-<span id="cb12-166"><a href="#cb12-166" aria-hidden="true" tabindex="-1"></a>       <span class="kw">end</span></span></code></pre></div>
+<span id="cb12-152"><a href="#cb12-152" aria-hidden="true" tabindex="-1"></a>           pho(<span class="dv">0</span>) <span class="kw">=</span> phi0</span>
+<span id="cb12-153"><a href="#cb12-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-154"><a href="#cb12-154" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;Xs (cm), Ts (a)&#39;</span>, Xs,Ts</span>
+<span id="cb12-155"><a href="#cb12-155" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;dt,dx,dtS/dx =&#39;</span>, dt,dx,P(<span class="dv">15</span>)<span class="kw">*</span>(P(<span class="dv">23</span>)<span class="kw">/</span>P(<span class="dv">16</span>))</span>
+<span id="cb12-156"><a href="#cb12-156" aria-hidden="true" tabindex="-1"></a>           <span class="fu">WRITE(</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;dx^2/2d=&#39;</span>, P(<span class="dv">16</span>)<span class="kw">**</span><span class="dv">2</span><span class="kw">/</span>(<span class="dv">2</span><span class="kw">*</span>P(<span class="dv">25</span>))</span>
+<span id="cb12-157"><a href="#cb12-157" aria-hidden="true" tabindex="-1"></a>           <span class="kw">IF</span>(P(<span class="dv">15</span>)<span class="kw">*</span>P(<span class="dv">23</span>)<span class="kw">/</span>P(<span class="dv">16</span>)<span class="op">.gt.</span><span class="fl">1.</span><span class="kw">/</span><span class="fl">5.</span>) <span class="kw">then</span></span>
+<span id="cb12-158"><a href="#cb12-158" aria-hidden="true" tabindex="-1"></a>              <span class="fu">WRITE(</span><span class="dv">6</span>,<span class="fu">*)</span><span class="st">&#39; problem: possible instability&#39;</span></span>
+<span id="cb12-159"><a href="#cb12-159" aria-hidden="true" tabindex="-1"></a>           <span class="kw">endif</span></span>
+<span id="cb12-160"><a href="#cb12-160" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;scale for MA, MC =&#39;</span>,rhos0<span class="kw">*</span>cara0<span class="kw">*</span>(<span class="dv">1</span><span class="kw">-</span>phi0), rhos0<span class="kw">*</span><span class="co">ccal0*(1-phi0)</span></span>
+<span id="cb12-161"><a href="#cb12-161" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;scale for c=&#39;</span>,<span class="bu">dsqrt</span>(Kc)</span>
+<span id="cb12-162"><a href="#cb12-162" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write (</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;Damkohler number Da=, scaled sedimentation rate,rhos0/rhow=&#39;</span>,P(<span class="dv">26</span>),P(<span class="dv">23</span>),rhos0<span class="kw">/</span>rhow</span>
+<span id="cb12-163"><a href="#cb12-163" aria-hidden="true" tabindex="-1"></a>           <span class="fu">WRITE(</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;scaled length, position of dissolution zone=&#39;</span>, length<span class="kw">/</span>Xs, xdis<span class="kw">/</span>Xs,(xdis<span class="kw">+</span>Th)<span class="kw">/</span>Xs</span>
+<span id="cb12-164"><a href="#cb12-164" aria-hidden="true" tabindex="-1"></a>           <span class="fu">WRITE(</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;a/Xs,b/Xs, rhosw-1=&#39;</span>,P(<span class="dv">21</span>),P(<span class="dv">28</span>),P(<span class="dv">13</span>)</span>
+<span id="cb12-165"><a href="#cb12-165" aria-hidden="true" tabindex="-1"></a>           <span class="fu">write(</span><span class="dv">6</span>,<span class="fu">*)</span> <span class="st">&#39;1/cXs,Dpor/Dca=&#39;</span>,P(<span class="dv">33</span>),P(<span class="dv">35</span>)</span>
+<span id="cb12-166"><a href="#cb12-166" aria-hidden="true" tabindex="-1"></a>       <span class="kw">return</span></span>
+<span id="cb12-167"><a href="#cb12-167" aria-hidden="true" tabindex="-1"></a>       <span class="kw">end</span></span></code></pre></div>
 </div>
 </section>
         </div>

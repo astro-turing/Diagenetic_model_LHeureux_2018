@@ -10,6 +10,8 @@ python = "^3.10.0"
 argh = "^0.26.2"
 numpy = "^1.23.4"
 h5py = "^3.7.0"
+matplotlib = "^3.6.1"
+Pint = "^0.19.2"
 
 [tool.poetry.dev-dependencies]
 

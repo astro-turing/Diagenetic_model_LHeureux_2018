@@ -9,9 +9,9 @@ new_target := $(build_dir)/marl-pde
 hdf5_cflags = $(shell h5fc -show '%' | cut -d% -f1 | cut -d' ' -f2-)
 hdf5_libs = $(shell h5fc -show '%' | cut -d% -f2 | cut -d' ' -f2-)
 
-legacy_flags := -Og -fbacktrace -Wall -Wextra -ffree-form \
+legacy_flags := -Ofast -fbacktrace -Wall -Wextra -ffree-form \
          -fimplicit-none -g -fcheck=all -std=legacy
-cflags := -Og -fbacktrace -Wall -Wextra  \
+cflags := -Ofast -fbacktrace -Wall -Wextra  \
          -fimplicit-none -g -fcheck=all -ffree-line-length-none \
 		 $(hdf5_cflags) -fintrinsic-modules-path /usr/lib64/gfortran/modules
 libs := $(hdf5_libs)

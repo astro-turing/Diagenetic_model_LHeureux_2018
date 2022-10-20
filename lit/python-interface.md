@@ -6,7 +6,10 @@ author: Johan Hidding
 We extended the original code with functions to read a `input.cfg` so that we can run multiple instances from Python.
 
 ``` {.python file=marlpde/__init__.py}
+from .marlpde import (Solver, Scenario, run_marl_pde, output_data, write_input_cfg)
+from .marlpde import u as units
 
+__all__ = ["Solver", "Scenario", "run_marl_pde", "output_data", "write_input_cfg", "units"]
 ```
 
 ``` {.python file=marlpde/__main__.py}
@@ -29,52 +32,68 @@ from pathlib import Path
 from dataclasses import (dataclass, asdict)
 from subprocess import (run)
 import h5py as h5
+from pint import UnitRegistry
+
+
+u = UnitRegistry()
+quantity = u.Quantity
 
 @dataclass
 class Scenario:
-    mua: float    = 100.09
-    rhoa: float   = 2.95
-    rhoc: float   = 2.71
-    rhot: float   = 2.8
-    rhow: float   = 1.023
-    D0ca: float   = 131.9
-    D0co3: float  = 272.6
-    Ka: float     = 6.4565e-7
-    Kc: float     = 4.2658e-7
-    beta: float   = 0.01
-    k1: float     = 0.0
-    k2: float     = 0.01
-    k3: float     = 0.001
-    nn: float     = 2.8
-    m: float      = 2.48
-    S: float      = 0.01
-    cAthy: float  = 0.1
-    phiinf: float = 0.01
-    phi0: float   = 0.7
-    ca0: float    = 6.5313e-4
-    co30: float   = 6.5313e-4
-    ccal0: float  = 0.3
-    cara0: float  = 0.6
+    mua: quantity    = 100.09 * u.g/u.mol
+    rhoa: quantity   = 2.95 * u.g/u.cm**3
+    rhoc: quantity   = 2.71 * u.g/u.cm**3
+    rhot: quantity   = 2.8 * u.g/u.cm**3
+    rhow: quantity   = 1.023 * u.g/u.cm**3
+    D0ca: quantity   = 131.9 * u.cm**2/u.a
+    D0co3: quantity  = 272.6 * u.cm**2/u.a
+    Ka: quantity     = 10**(-6.19) * u.M**2
+    Kc: quantity     = 10**(-6.37) * u.M**2
+    beta: quantity   = 0.1 * u.cm / u.a
+    b: quantity      = 5.0 / u.kPa
+    k1: quantity     = 1.0 / u.a
+    k2: quantity     = 1.0 / u.a
+    k3: quantity     = 0.1 / u.a
+    k4: quantity     = 0.1 / u.a
+    nn: quantity     = 2.8 * u.dimensionless
+    m: quantity      = 2.48 * u.dimensionless
+    S: quantity      = 0.1 * u.cm / u.a
+    # cAthy: quantity  = 0.1 * u.dimensionless
+    phiinf: quantity = 0.01 * u.dimensionless
+    phi0: quantity   = 0.6 * u.dimensionless
+    phiin: quantity  = 0.5 * u.dimensionless
+    ca0: quantity    = 0.326e-3 * u.M
+    co30: quantity   = 0.326e-3 * u.M
+    ccal0: quantity  = 0.3 * u.dimensionless
+    cara0: quantity  = 0.6 * u.dimensionless
+    xdis: quantity   = 50.0 * u.cm       # x_d   (start of dissolution zone)
+    xcem: quantity   = -100.0 * u.cm
+    xcemf: quantity  = 1000.0 * u.cm
+    length: quantity = 500.0 * u.cm
+    Th: quantity     = 100.0 * u.cm      # h_d   (height of dissolution zone)
 
 @dataclass
 class Solver:
     dt: float     = 5.e-6
-    xdis: float   = 50.0
-    xcem: float   = -100.0
-    xcemf: float  = 1000.0
-    length: float = 500.0
-    eps: float    = 1.e-2
-    Th: float     = 100.0
-    tmax: int     = 20_000
-    outt: int     =  1_000
-    outx: int     = 50_000
+    eps: float    = 1.e-6
+    tmax: int     = 200_000
+    outt: int     =   1_000      # timesteps inbetween writing
+    outx: int     =  50_000
     N: int        = 200
+
+def cAthy(s: Scenario):
+    return ((1 - s.phi0) * s.b * 9.81 * u['m/s²'] * s.rhow).to('cm⁻¹')
 
 def write_input_cfg(path: Path, solver: Solver, scenario: Scenario):
     cfg = configparser.ConfigParser()
     cfg.optionxform = str
     cfg["Solver"] = asdict(solver)
-    cfg["Scenario"] = asdict(scenario)
+
+    units = { k: v.units for (k, v) in asdict(Scenario()).items() }
+    magnitudes = { k: v.to(units[k]).magnitude
+                   for (k, v) in asdict(scenario).items() }
+    magnitudes["cAthy"] = cAthy(scenario).magnitude
+    cfg["Scenario"] = magnitudes
     path.mkdir(parents=True, exist_ok=True)
     with open(path / "input.cfg", "w") as f_cfg:
         cfg.write(f_cfg)

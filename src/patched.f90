@@ -45,15 +45,15 @@
            CALL h5open_f(hdferr)
            CALL h5fcreate_f("output.h5", H5F_ACC_TRUNC_F, file_handle, hdferr)
            CALL h5screate_simple_f(2, data_size, space_handle, hdferr)
-           CALL h5dcreate_f(file_handle, "aragonite", H5T_NATIVE_REAL, space_handle, dataset_handle, hdferr)
+           CALL h5dcreate_f(file_handle, "aragonite", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
            CALL h5dclose_f(dataset_handle, hdferr)
-           CALL h5dcreate_f(file_handle, "calcite", H5T_NATIVE_REAL, space_handle, dataset_handle, hdferr)
+           CALL h5dcreate_f(file_handle, "calcite", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
            CALL h5dclose_f(dataset_handle, hdferr)
-           CALL h5dcreate_f(file_handle, "carbonate", H5T_NATIVE_REAL, space_handle, dataset_handle, hdferr)
+           CALL h5dcreate_f(file_handle, "carbonate", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
            CALL h5dclose_f(dataset_handle, hdferr)
-           CALL h5dcreate_f(file_handle, "calcium", H5T_NATIVE_REAL, space_handle, dataset_handle, hdferr)
+           CALL h5dcreate_f(file_handle, "calcium", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
            CALL h5dclose_f(dataset_handle, hdferr)
-           CALL h5dcreate_f(file_handle, "porosity", H5T_NATIVE_REAL, space_handle, dataset_handle, hdferr)
+           CALL h5dcreate_f(file_handle, "porosity", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
            CALL h5dclose_f(dataset_handle, hdferr)
            CALL h5sclose_f(space_handle, hdferr)
 
@@ -108,31 +108,31 @@
                   call h5dopen_f(file_handle, "aragonite", dataset_handle, hdferr)
                   call h5dget_space_f(dataset_handle, space_handle, hdferr)
                   call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr, stride, block)
-                  call h5dwrite_f(dataset_handle, H5T_NATIVE_REAL, ara, data_size, hdferr, row_handle, space_handle)
+                  call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, ara, data_size, hdferr, row_handle, space_handle)
                   call h5sclose_f(space_handle, hdferr)
                   call h5dclose_f(dataset_handle, hdferr)
                   call h5dopen_f(file_handle, "calcite", dataset_handle, hdferr)
                   call h5dget_space_f(dataset_handle, space_handle, hdferr)
                   call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
-                  call h5dwrite_f(dataset_handle, H5T_NATIVE_REAL, cal, data_size, hdferr, row_handle, space_handle)
+                  call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, cal, data_size, hdferr, row_handle, space_handle)
                   call h5sclose_f(space_handle, hdferr)
                   call h5dclose_f(dataset_handle, hdferr)
                   call h5dopen_f(file_handle, "carbonate", dataset_handle, hdferr)
                   call h5dget_space_f(dataset_handle, space_handle, hdferr)
                   call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
-                  call h5dwrite_f(dataset_handle, H5T_NATIVE_REAL, co, data_size, hdferr, row_handle, space_handle)
+                  call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, co, data_size, hdferr, row_handle, space_handle)
                   call h5sclose_f(space_handle, hdferr)
                   call h5dclose_f(dataset_handle, hdferr)
                   call h5dopen_f(file_handle, "calcium", dataset_handle, hdferr)
                   call h5dget_space_f(dataset_handle, space_handle, hdferr)
                   call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
-                  call h5dwrite_f(dataset_handle, H5T_NATIVE_REAL, ca, data_size, hdferr, row_handle, space_handle)
+                  call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, ca, data_size, hdferr, row_handle, space_handle)
                   call h5sclose_f(space_handle, hdferr)
                   call h5dclose_f(dataset_handle, hdferr)
                   call h5dopen_f(file_handle, "porosity", dataset_handle, hdferr)
                   call h5dget_space_f(dataset_handle, space_handle, hdferr)
                   call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
-                  call h5dwrite_f(dataset_handle, H5T_NATIVE_REAL, ph, data_size, hdferr, row_handle, space_handle)
+                  call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, ph, data_size, hdferr, row_handle, space_handle)
                   call h5sclose_f(space_handle, hdferr)
                   call h5dclose_f(dataset_handle, hdferr)
                   offset(1) = offset(1) + 1
@@ -229,8 +229,8 @@
                     dpdx=(ph(1)-ph(0))/dx
                     dpdx=0.
                     dpdx=dpdx
-                    w(0)=u(0)-k(0)*(rhosw0-1)/ph(0)
- !                   w(0)=u(0)-k(0)*(rhosw0-1)/ph(0)*(1+dpdx*P(33)/(ph(0)-P(34)))
+ !                   w(0)=u(0)-k(0)*(rhosw0-1)/ph(0)
+                    w(0)=u(0)-k(0)*(rhosw0-1)/ph(0)*(1+dpdx*P(33)/(ph(0)-P(34)))
  !                   
 
  !                                    
@@ -397,7 +397,7 @@
  !  approx u(i)=S                          
  !                          u(i)=P(23)
                            w(i)=u(i)-k(i)*(rhosw0-1)/ph(i)
- !                          w(i)=u(i)-k(i)*(rhosw0-1)/ph(i)*(1+dpdx*P(33)/(ph(i)-P(34)))
+ !                         w(i)=u(i)-k(i)*(rhosw0-1)/ph(i)*(1+dpdx*P(33)/(ph(i)-P(34)))
  !
 
   !                        
@@ -471,13 +471,13 @@
 
 !  velocity u,w
                               u(i)=k(i)*(rhosw0-1)+P(23)-P(13)*k(0)
-                      w(i)=u(i)-k(i)*(rhosw0-1)/ph(i)
+                      ! w(i)=u(i)-k(i)*(rhosw0-1)/ph(i)
 !  approx  u(i)=S               
  !                     u(i)=P(23)     
 
 
                       w(i)=P(23)-k(i)*(rhosw0-1)/ph(i)
-!                       w(i)=u(i)-k(i)*(rhosw0-1)/ph(i)*(1+dpdx*P(33)/(ph(i)-P(34)))
+                      ! w(i)=u(i)-k(i)*(rhosw0-1)/ph(i)*(1+dpdx*P(33)/(ph(i)-P(34)))
   !                    
 
 
@@ -541,14 +541,10 @@
            dt=P(15)
 
            a=dt/dx
-
-
            ARAnew(0)=ARA(0)
            CALnew(0)=CAL(0)
 
-           do 30 i=1,n-1
-
-
+           do i=1,n-1
              ARANEW(i)=ARA(i)-a*u(i)*(ARA(i)*S(i)-ARA(i-1)*0.5*(S(i)+1.)+ARA(i+1)*0.5*(1.-S(i)))&
  &              +dt*RAR(i)
              CALNEW(i)=CAL(i)-a*u(i)*(CAL(i)*S(i)-CAL(i-1)*0.5*(S(i)+1.)+CAL(i+1)*0.5*(1.-S(i)))&
@@ -558,12 +554,10 @@
              if(1-ARAnew(i).lt.1.d-10) ARAnew(i)=1.
              if(ARAnew(i).lt.1.d-70) ARAnew(i)=0.
              if(CALnew(i).lt.1.d-70) CALnew(i)=0.
-
-30         continue
+           end do
 
              ARAnew(n)=ARA(n)-a*u(n)*S(n)*(ARA(n)-ARA(n-1))+dt*RAR(n)
              CALnew(n)=CAL(n)-a*u(n)*S(n)*(CAL(n)-CAL(n-1))+dt*RCAL(n)
-
 
              if(1-ARAnew(n)-CALnew(n).lt.1.d-70) ARAnew(n)=1-CALnew(n)
              if(1-CALnew(n).lt.1.d-10) CALnew(n)=1.
@@ -571,15 +565,11 @@
              if(ARAnew(n).lt.1.d-70) ARAnew(n)=0.
              if(CALnew(n).lt.1.d-70) CALnew(n)=0.
 
-
 !    update
-             do 44 i=0,n
-
+             do i=0,n
                 ARA(i)=ARAnew(i)
                 CAL(i)=CALnew(i)
-44           continue                                 
-
-
+             end do
            return
            end
 ! ~\~ end
@@ -874,7 +864,7 @@ end
            real*8 pho(0:1000),cao(0:1000),coo(0:1000),ARAo(0:1000),CALo(0:1000)
            REAL*8 dt,dx, P(35),Th,mua,rhoa,rhoc,rhot,rhow,D0ca,D0co3,Ka,Kc,beta,k1,k2,k3,length,xdis
            REAL*8 m,nn,S,phi0,ca0,co30,ccal0,cara0,a,b,Vscale,rhos0,Xs,Ts,eps,xcem,xcemf
-           real*8 phiinf,cAthy
+           real*8 phiinf,cAthy,phiin
 !           REAL*8 arg,tgh
            integer tmax,N,outt,i,outx
            COMMON/general/ pho,cao,coo, ARAo,CALo,tmax,outx,outt, N
@@ -895,12 +885,7 @@ end
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !           LAX=0
            call cfg%get("Solver", "dt", dt)
-           call cfg%get("Solver", "xdis", xdis)
-           call cfg%get("Solver", "xcem", xcem)
-           call cfg%get("Solver", "xcemf", xcemf)
-           call cfg%get("Solver", "length", length)
            call cfg%get("Solver", "eps", eps)
-           call cfg%get("Solver", "Th", Th)
            call cfg%get("Solver", "tmax", tmax)
            call cfg%get("Solver", "outt", outt)
            call cfg%get("Solver", "outx", outx)
@@ -917,7 +902,11 @@ end
            !   outt=1
            !   outx=tmax/4
            !   N=200
-
+           call cfg%get("Scenario", "xdis", xdis)
+           call cfg%get("Scenario", "xcem", xcem)
+           call cfg%get("Scenario", "xcemf", xcemf)
+           call cfg%get("Scenario", "length", length)
+           call cfg%get("Scenario", "Th", Th)
            call cfg%get("Scenario", "mua", mua)
            ! call cfg%get("Scenario", "muw", muw) not used
            call cfg%get("Scenario", "rhoa", rhoa)
@@ -937,6 +926,7 @@ end
            call cfg%get("Scenario", "S", S)
            call cfg%get("Scenario", "cAthy", cAthy)
            call cfg%get("Scenario", "phiinf", phiinf)
+           call cfg%get("Scenario", "phiin", phiin)
            call cfg%get("Scenario", "phi0", phi0)
            call cfg%get("Scenario", "ca0", ca0)
            call cfg%get("Scenario", "co30", co30)
@@ -1010,12 +1000,13 @@ end
 ! Initial conditions (dimensionless)
 
            do i=0,N
-            pho(i)=phi0
+            pho(i)=phiin
             cao(i)=ca0/dsqrt(Kc)
             coo(i)=co30/dsqrt(Kc)
             ARAo(i)=cara0
             CALo(i)=ccal0
            end do
+           pho(0) = phi0
 
            write (6,*) 'Xs (cm), Ts (a)', Xs,Ts
            write (6,*) 'dt,dx,dtS/dx =', dt,dx,P(15)*(P(23)/P(16))

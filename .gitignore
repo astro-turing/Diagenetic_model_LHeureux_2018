@@ -4,3 +4,7 @@ build
 amarl*
 marlstuff
 __pycache__
+.ipynb_checkpoints
+output.h5
+input.cfg
+
