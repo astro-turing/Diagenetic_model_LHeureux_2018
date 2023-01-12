@@ -514,8 +514,8 @@
            cohalf(0)=co(0)
            phalf(0)=ph(0)
            do 30 i=1,n-1
-             phalf(i)=ph(i)-a*((1-sigpo(i+1))*ph(i+1)*w(i+1)+2*sigpo(i)*ph(i)*w(i)-&
-&          (1+sigpo(i-1))*ph(i-1)*w(i-1))&
+             phalf(i)=ph(i)-a*((1-sigpo(i))*ph(i+1)*w(i+1)+2*sigpo(i)*ph(i)*w(i)-&
+&          (1+sigpo(i))*ph(i-1)*w(i-1))&
 &             +2*b*difpor*(ph(i-1)-2*ph(i)+ph(i+1))+0.5*dt*Rp(i)
              if(phalf(i).lt.eps) phalf(i)=eps
              if(1-phalf(i).lt.eps) phalf(i)=1.-eps    
@@ -538,7 +538,7 @@
              
           
 30         continue
-              phalf(n)=ph(n)+2*a*(sigpo(n-1)*ph(n-1)*w(n-1)-sigpo(n)*ph(n)*w(n)) &
+              phalf(n)=ph(n)+2*a*(sigpo(n)*ph(n-1)*w(n-1)-sigpo(n)*ph(n)*w(n)) &
 &             +4*b*difpor*(ph(n-1)-ph(n))+0.5*dt*Rp(n)
              if(phalf(n).lt.eps) phalf(n)=eps
              if(1-phalf(n).lt.eps) phalf(n)=1.-eps    
@@ -734,9 +734,9 @@
 
 
           do 10 i=1,n-1
-       Bypo(i)=(a*whalf(i-1)*(1+sigpo(i-1))+2*b*difpor)*ph(i-1) &
+       Bypo(i)=(a*whalf(i-1)*(1+sigpo(i))+2*b*difpor)*ph(i-1) &
  &             +(1.-a*2*whalf(i)*sigpo(i)-4*b*difpor)*ph(i) &
- &             +  (-a*whalf(i+1)*(1-sigpo(i+1))+2*b*difpor)*ph(i+1) + dt*Rp(i)
+ &             +  (-a*whalf(i+1)*(1-sigpo(i))+2*b*difpor)*ph(i+1) + dt*Rp(i)
       
  !
       if(phalf(i).le.eps) then
