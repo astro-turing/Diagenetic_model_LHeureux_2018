@@ -800,6 +800,10 @@
            WRITE(6,*) 'scaled length, positions of dissolution zone=', length/Xs, xdis/Xs,(xdis+Th)/Xs
            WRITE(6,*) 'rhosw-1=',P(13)
            write(6,*) 'Dpor/Dca=',P(35)
+	   ! export parameters needed for further analysis
+	   open(1000,FILE='params')
+	   write(1000,*) Xs, Ts, S, phi0, bb, rhow, rhos0
+	   close(1000)
  ! Wait for an ackowledgment from the screen before starting
            PAUSE
            return
