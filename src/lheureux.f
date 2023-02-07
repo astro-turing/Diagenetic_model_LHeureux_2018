@@ -37,7 +37,7 @@
 11     continue
 	   t=0.0
        WRITE(12,101)'t ','AR','AR','AR','AR','CA','CA','CA','CA','P ','P ','P ','P ','ca','ca','ca','ca','co','co','co','co'&
- &             ,'U ','W '          
+ &             ,'U ','W ','OC','OA','RAR','RCAL'          
        WRITE(8,103) 'x ','AR','CA','Po','Ca','CO','TE','U ','W ','OC','OA','Rp'
        WRITE(9,103) 'x ','AR','CA','Po','Ca','CO','TE','U ','W ','OC','OA','Rp'
        WRITE(10,103) 'x ','AR','CA','Po','Ca','CO','TE','U ','W ','OC','OA','Rp'
@@ -47,7 +47,8 @@
 ! the diffusion coefficients
        call auxf(t,n,ph,ca,co,ARA,CAL,U,S,W,OC,OA,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,RAR,RCAL)
 	   write (12,100) t,P(18),P(18),P(18),P(18),P(19),P(19),P(19),P(19),P(8),P(8),P(8),P(8),&
-&           ca(N/4),ca(N/2),ca(3*N/4),ca(N),co(N/4),co(N/2),co(3*N/4),co(N),U(N/4),W(N/4)
+&           ca(N/4),ca(N/2),ca(3*N/4),ca(N),co(N/4),co(N/2),co(3*N/4),co(N),U(N/4),W(N/4),&
+&	    OC(N),OA(N),RAR(N),RCAL(N)
 ! projectX evaluates ARA, CAL, U at t=t+dt/2
        call projectX(n,ARA,CAL,U,S,RAR,RCAL,ARAhalf,CALhalf)
 ! projectX evaluates ca, co,ph, W at t=t+dt/2  
@@ -678,15 +679,12 @@
 !  bb=sediment compressibility in (kPa)-1
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-           dt=1.d-3
            dt=1.d-6
-           dt=5.d-6
-           dt=1.d-5
            xdis=50.
            length=500.
            Th=100.          
            eps=1.d-2       
-           tmax=1000000
+           tmax=10000000
            outt=1000       
            outx=tmax/4
            N=200
@@ -708,8 +706,6 @@
            m=2.48
            nn=2.8                   
            S=0.01
-           S=0.1
-           bb=10.d0
            bb=5.0d0
            phiinf=eps
 !  new incoming sediment          
