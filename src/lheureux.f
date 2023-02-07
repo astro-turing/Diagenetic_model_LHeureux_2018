@@ -15,9 +15,9 @@
 	   COMMON/general/ pho,cao,coo, ARAo,CALo,tmax,outx,outt, N
        COMMON/par/P
  ! Open output files. 8-11: spatial profiles at four different times; OC, OA and Rp are oversaturations 
- ! and porosity reaction reaction. 12: time series taken at four positions; U and W taken at a quarter of the length.
+ ! and porosity reaction reaction. 12: time series taken at four positions; U and W taken at bottom of the system
  ! 13: miscellaneous variables
-	   open (8,file='amarlt1') 
+	open (8,file='amarlt1') 
        OPEN(9,FILE='amarlt2')
        OPEN(10,FILE='amarlt3')
        OPEN(11,FILE='amarlt4')
@@ -36,18 +36,22 @@
              CAL(i)=CALo(i)
 11     continue
 	   t=0.0
+
        WRITE(12,101)'t ','AR','AR','AR','AR','CA','CA','CA','CA','P ','P ','P ','P ','ca','ca','ca','ca','co','co','co','co'&
- &             ,'U ','W ','OC','OA','RAR','RCAL'          
+&            ,'U ','W ','OC','OA','RA','RC'          
        WRITE(8,103) 'x ','AR','CA','Po','Ca','CO','TE','U ','W ','OC','OA','Rp'
        WRITE(9,103) 'x ','AR','CA','Po','Ca','CO','TE','U ','W ','OC','OA','Rp'
        WRITE(10,103) 'x ','AR','CA','Po','Ca','CO','TE','U ','W ','OC','OA','Rp'
        WRITE(11,103) 'x ','AR','CA','Po','Ca','CO','TE','U ','W ','OC','OA','Rp'
        write(13,110) 't ','p1','k1','u1','p2','k2','u2','p3','k3','u3'
+
 ! auxf gets all auxiliairy functions: the velocities U, W, the grid Peclet numbers, the reaction rates, 
 ! the diffusion coefficients
        call auxf(t,n,ph,ca,co,ARA,CAL,U,S,W,OC,OA,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,RAR,RCAL)
-	   write (12,100) t,P(18),P(18),P(18),P(18),P(19),P(19),P(19),P(19),P(8),P(8),P(8),P(8),&
-&           ca(N/4),ca(N/2),ca(3*N/4),ca(N),co(N/4),co(N/2),co(3*N/4),co(N),U(N/4),W(N/4)
+
+	write (12,100) t,P(18),P(18),P(18),P(18),P(19),P(19),P(19),P(19),P(8),P(8),P(8),P(8),&
+           ca(N/4),ca(N/2),ca(3*N/4),ca(N),co(N/4),co(N/2),co(3*N/4),co(N),U(N),W(N),&
+	    OC(N),OA(N),RAR(N),RCAL(N)
 ! projectX evaluates ARA, CAL, U at t=t+dt/2
        call projectX(n,ARA,CAL,U,S,RAR,RCAL,ARAhalf,CALhalf)
 ! projectX evaluates ca, co,ph, W at t=t+dt/2  
@@ -66,9 +70,8 @@
  !  Generates time series at every outt          
            IF(j/outt*outt.eq.j) then
               write (12,100) t,ara(N/4),ara(N/2),ara(3*N/4),ara(N),cal(N/4),cal(N/2),cal(3*N/4),cal(N),&
- &            ph(N/4),ph(N/2),ph(3*N/4),ph(N),ca(N/4),ca(N/2),ca(3*N/4),ca(N),&
- &            co(N/4),co(N/2),co(3*N/4),co(N),U(N),W(N),&
-&	    OC(N),OA(N),RAR(N),RCAL(N)
+             ph(N/4),ph(N/2),ph(3*N/4),ph(N),ca(N/4),ca(N/2),ca(3*N/4),ca(N),&
+             co(N/4),co(N/2),co(3*N/4),co(N),U(N),W(N),OC(N),OA(N),RAR(N),RCAL(N)
            endif
 	       IF(j.eq.outx) then
  !  Output profiles at every multiple of outx           
@@ -99,8 +102,8 @@
            call projectX(n,ARA,CAL,U,S,RAR,RCAL,ARAhalf,CALhalf)
            call projectY(n,ph,ca,co,W,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf,cahalf,cohalf)
 12      continue
-100     format (23(d12.5,1x))
-101     format (13x,23(a2,11x))
+100     format (27(d12.5,1x))
+101     format (13x,27(a2,11x))
 102     format (12(d12.5,1x))
 103     format(13x,12(a2,11x))
 110     format(13x,10(a2,11x))
@@ -343,7 +346,7 @@
                RCAL(i)=P(3)*P(26)*OC(i)*CAL(i)*(1-CAL(i))+P(26)*OA(i)*CAL(i)*(1-CAL(i))
                Rp(i)=P(26)*((1-CAL(i))*OA(i)-P(3)*CAL(i)*OC(i))*(1-ph(i))
              else
-               RAR(i)=-P(26)*OA(i)*ARA(i)*(1-ARA(i))-P(26)*P(3)*OC(i)*ARA(i)*CAL(i)
+               RAR(i)=-P(26)*OA(i)*ARA(i)*(1-ARA(i))-P(26)*P(3)*OC(i)*ARA(i)*CAL(i) ! ALways negative  -> solid to liquid
                RCAL(i)=P(3)*P(26)*OC(i)*CAL(i)*(1-CAL(i))+P(26)*OA(i)*CAL(i)*ARA(i)
                Rp(i)=P(26)*(ARA(i)*OA(i)-P(3)*CAL(i)*OC(i))*(1-ph(i))
             endif 
@@ -356,18 +359,31 @@
 !
 
            subroutine projectX(n,ARA,CAL,U,S,RAR,RCAL,ARAhalf,CALhalf)
-! This routine calculates the projected solid phase fields at half-time in order to treat the non-linearities
+! calculates the projected solid phase fields at half-time in order to treat the non-linearities
            real*8 U(0:1000),ARA(0:1000),CAL(0:1000),ARAhalf(0:1000),CALhalf(0:1000)
            REAL*8 S(0:1000)
            REAL*8 dt,dx,P(35),a
            REAL*8 RAR(0:1000),RCAL(0:1000)       
-	       integer N,i
+	   integer N,i
            COMMON/par/P
+! n: grid point index, where 0 = surface, n = bottom
+! U: solid phase velocity
+! ARA, CAL: aragonite, calcite
+! RAR: Reactino rate aragonite
+! RCal: Reactino rate calcite
+! S: sign of the solid phase velocity
+
            dx=P(16)
            dt=P(15)          
-           a=dt/(2*dx)    
+           a=dt/(2*dx) ! coefficient used in upwind
+
+! SURFACE
+! boundary conditions at surface: Aragonite and Calcite value remain unchanged (and thus are fixed to the values set in init)
+! Eq. 35 fro L'Heureux (2018)      
            ARAhalf(0)=ARA(0)
-           CALhalf(0)=CAL(0)  
+           CALhalf(0)=CAL(0)
+
+! INTERIOR  
            do 30 i=1,n-1
              ARAhalf(i)=ARA(i)-a*u(i)*(ARA(i)*S(i)-ARA(i-1)*0.5*(S(i)+1.)+ARA(i+1)*0.5*(1.-S(i)))&
  &              +0.5*dt*RAR(i)
@@ -378,7 +394,9 @@
              if(1-ARAhalf(i).lt.1.d-10) ARAhalf(i)=1.
              if(ARAhalf(i).lt.1.d-70) ARAhalf(i)=0.
              if(CALhalf(i).lt.1.d-70) CALhalf(i)=0.
-30         continue 
+30         continue
+
+! BOTTOM 
              ARAhalf(n)=ARA(n)-a*u(n)*S(n)*(ARA(n)-ARA(n-1))+0.5*dt*RAR(n)
              CALhalf(n)=CAL(n)-a*u(n)*S(n)*(CAL(n)-CAL(n-1))+0.5*dt*RCAL(n)           
              if(1-ARAhalf(n)-CALhalf(n).lt.1.d-70) ARAhalf(n)=1-CALhalf(n)
@@ -448,37 +466,60 @@
 !
 
            subroutine upwind(n,ARA,CAL,U,S,RAR,RCAL)
-! Implementation of the upwind scheme for the advection equations
+! Implementation of the upwind scheme for the advection equations (Calcite, Aragonite)
            real*8 U(0:1000),ARA(0:1000),CAL(0:1000)
            REAL*8 RAR(0:1000),RCAL(0:1000),ARAnew(0:1000),CALnew(0:1000)
            REAL*8 S(0:1000)
            REAL*8 dt,dx,P(35),a         
 	       integer N,i
            COMMON/par/P
+! U: solid phase velocity
+! Ara, Cal aragonite, calcite
+! RAR: Reactino rate aragonite
+! RCal: Reactino rate calcite
+! S: sign of the solid phase velocity
            dx=P(16)
            dt=P(15)          
-           a=dt/dx       
+           a=dt/dx
+! SURFACE
+! boundary conditions at surface: Aragonite and Calcite value remain unchanged (and thus are fixed to the values set in init)
+! Eq. 35 fro L'Heureux (2018)       
            ARAnew(0)=ARA(0)
            CALnew(0)=CAL(0)
-           do 30 i=1,n-1        
+
+! INTERIOR
+           do 30 i=1,n-1
+! Analytical expression for upwind that automatically switches directions dependent on the sign of U (stored in variable S)        
              ARANEW(i)=ARA(i)-a*u(i)*(ARA(i)*S(i)-ARA(i-1)*0.5*(S(i)+1.)+ARA(i+1)*0.5*(1.-S(i)))&
  &              +dt*RAR(i)
              CALNEW(i)=CAL(i)-a*u(i)*(CAL(i)*S(i)-CAL(i-1)*0.5*(S(i)+1.)+CAL(i+1)*0.5*(1.-S(i)))&
  &               +dt*RCAL(i)
+! Case: No terestrial material -> calcite and aragonite add to 1
              if(1-ARAnew(i)-CALnew(i).lt.1.d-70) ARAnew(i)=1-CALnew(i)
+! Case: Calcite dominates
              if(1-CALnew(i).lt.1.d-10) CALnew(i)=1.
+! Case: Aragonite dominates
              if(1-ARAnew(i).lt.1.d-10) ARAnew(i)=1.
+! Case: Aragonite vanishes
              if(ARAnew(i).lt.1.d-70) ARAnew(i)=0.
+! Case: Calcite vanishes
              if(CALnew(i).lt.1.d-70) CALnew(i)=0.
 30         continue
+
+! BOTTOM
+! Use upwind with velocity |u(n)| (= u(n)*S(n)) for Aragonite and Calcite
+! Not sure this makes sense ??? -Nick
              ARAnew(n)=ARA(n)-a*u(n)*S(n)*(ARA(n)-ARA(n-1))+dt*RAR(n)
-             CALnew(n)=CAL(n)-a*u(n)*S(n)*(CAL(n)-CAL(n-1))+dt*RCAL(n)                        
+             CALnew(n)=CAL(n)-a*u(n)*S(n)*(CAL(n)-CAL(n-1))+dt*RCAL(n)  
+! Case: No terrestrial material                      
              if(1-ARAnew(n)-CALnew(n).lt.1.d-70) ARAnew(n)=1-CALnew(n)
+! Cases: Aragonite resp. Calcite dominate
              if(1-CALnew(n).lt.1.d-10) CALnew(n)=1.
              if(1-ARAnew(n).lt.1.d-10) ARAnew(n)=1.
+! Cases: Aragonite resp. Calcite vanish
              if(ARAnew(n).lt.1.d-70) ARAnew(n)=0.
              if(CALnew(n).lt.1.d-70) CALnew(n)=0.         
-!    update
+! update Values
              do 44 i=0,n
                 ARA(i)=ARAnew(i)
                 CAL(i)=CALnew(i)
@@ -679,7 +720,7 @@
 !  bb=sediment compressibility in (kPa)-1
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-           dt=1.d-6
+           dt=1.d-5
            xdis=50.
            length=500.
            Th=100.          
@@ -705,7 +746,7 @@
            k3=0.1
            m=2.48
            nn=2.8                   
-           S=0.01
+           S=0.1
            bb=5.0d0
            phiinf=eps
 !  new incoming sediment          
