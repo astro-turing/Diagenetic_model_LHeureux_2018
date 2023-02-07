@@ -47,8 +47,7 @@
 ! the diffusion coefficients
        call auxf(t,n,ph,ca,co,ARA,CAL,U,S,W,OC,OA,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,RAR,RCAL)
 	   write (12,100) t,P(18),P(18),P(18),P(18),P(19),P(19),P(19),P(19),P(8),P(8),P(8),P(8),&
-&           ca(N/4),ca(N/2),ca(3*N/4),ca(N),co(N/4),co(N/2),co(3*N/4),co(N),U(N/4),W(N/4),&
-&	    OC(N),OA(N),RAR(N),RCAL(N)
+&           ca(N/4),ca(N/2),ca(3*N/4),ca(N),co(N/4),co(N/2),co(3*N/4),co(N),U(N/4),W(N/4)
 ! projectX evaluates ARA, CAL, U at t=t+dt/2
        call projectX(n,ARA,CAL,U,S,RAR,RCAL,ARAhalf,CALhalf)
 ! projectX evaluates ca, co,ph, W at t=t+dt/2  
@@ -68,7 +67,8 @@
            IF(j/outt*outt.eq.j) then
               write (12,100) t,ara(N/4),ara(N/2),ara(3*N/4),ara(N),cal(N/4),cal(N/2),cal(3*N/4),cal(N),&
  &            ph(N/4),ph(N/2),ph(3*N/4),ph(N),ca(N/4),ca(N/2),ca(3*N/4),ca(N),&
- &            co(N/4),co(N/2),co(3*N/4),co(N),U(N),W(N)
+ &            co(N/4),co(N/2),co(3*N/4),co(N),U(N),W(N),&
+&	    OC(N),OA(N),RAR(N),RCAL(N)
            endif
 	       IF(j.eq.outx) then
  !  Output profiles at every multiple of outx           
