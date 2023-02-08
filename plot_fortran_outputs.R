@@ -38,3 +38,6 @@ plot(x = data$t,
      type="l",
      xlim=c(burn_in,max(data$t)),
      ylim=range(data$OA[data$t>burn_in]))
+
+
+plot(data$t,data$CA.3)
