@@ -482,6 +482,9 @@
 30         continue
 
 ! BOTTOM
+! What is happening here?
+! Uses more than one peclet number. Why?
+! Why is there only sigpo, and not (1-sigpo) as in Boudreax (1996), eq. 96
               phalf(n)=ph(n)+2*a*(sigpo(n-1)*ph(n-1)*w(n-1)-sigpo(n)*ph(n)*w(n)) &
 &             +4*b*difpor*(ph(n-1)-ph(n))+0.5*dt*Rp(n)
 ! Cap projected porosity: minimum projected value is eps
