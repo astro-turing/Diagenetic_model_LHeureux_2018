@@ -360,6 +360,7 @@
 
            subroutine projectX(n,ARA,CAL,U,S,RAR,RCAL,ARAhalf,CALhalf)
 ! calculates the projected solid phase fields at half-time in order to treat the non-linearities
+! see Rosenberg p. 58 as cited in L'Heureux (2018)
            real*8 U(0:1000),ARA(0:1000),CAL(0:1000),ARAhalf(0:1000),CALhalf(0:1000)
            REAL*8 S(0:1000)
            REAL*8 dt,dx,P(35),a
@@ -410,32 +411,64 @@
 !
            SUBROUTINE  projectY(n,ph,ca,co,W,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf,cahalf,cohalf)
 ! This routine calculates the projected aqueous phase fields at half-time in order to treat the non-linearities
+! see Rosenberg p. 58 as cited in L'Heureux (2018)
            real*8 ph(0:1000),W(0:1000),cahalf(0:1000),cohalf(0:1000),phalf(0:1000),sigpo(0:1000)
            REAL*8 ca(0:1000),co(0:1000),dca(0:1000),dco(0:1000),sigca(0:1000),sigco(0:1000),Rca(0:1000),Rco(0:1000)
            REAL*8 dt,dx,P(35),a,b,eps,difpor,Rp(0:1000)
-	       integer N,i
+	   integer N,i
            COMMON/par/P
+! N: number of grid points
+! ph: porosity
+! ca: dissolved Ca
+! co: dissolved Carbonate
+! W: velocity of liquid phase
+! dca
+! dco
+! sigca: peclet no of ca
+! sigco: peclet no of co
+! Rp: reaction rate of ph (porosity)
+! Rca: reaction rate of dissolved ca
+! Rco: reaction rate of dissolved carbonate
+! phalf: projected porosity at half time
+! cahalf: projected dissolved ca at half time
+! cohalf: projected dissolved carbonate at half time
+
+! depth and time incrementrs
            dx=P(16)
            dt=P(15)
+! small value to cap porosity
            eps=P(29)
+! coefficients used in the projection method
            a=dt/(4*dx)
            b=dt/(4*dx*dx)
-           difpor=P(35)         
+! Constant porosity
+           difpor=P(35)
+! SURFACE
+! projected ca, co, & porosity at surface: use constant in accordance of initial conditions (L'Heureux (2018), eq. 35)        
            cahalf(0)=ca(0)
            cohalf(0)=co(0)
            phalf(0)=ph(0)
+
+! INTERIOR
            do 30 i=1,n-1
+! Project porosity according to Rosenberg p. 58 as cited in L'Heureux (2018)
+! uses two peclet numbers here. WHY?
               phalf(i)=ph(i)-a*((1-sigpo(i+1))*ph(i+1)*w(i+1)+2*sigpo(i)*ph(i)*w(i)-&
 &             (1+sigpo(i-1))*ph(i-1)*w(i-1))&
 &             +2*b*difpor*(ph(i-1)-2*ph(i)+ph(i+1))+0.5*dt*Rp(i)
+! Cap projected porosity: minimum projected value is eps
               if(phalf(i).lt.eps) phalf(i)=eps
-              if(1-phalf(i).lt.eps) phalf(i)=1.-eps                   
+! Cap projected porosity: maximum projected value is 1-eps
+              if(1-phalf(i).lt.eps) phalf(i)=1.-eps
+! Case: Porosity is small -> neglect diffusion term. Use spatial discretisation vie FV                
               if(ph(i).le.eps) then
+! Project ca & co
                 cahalf(i)=ca(i)-a*w(i)*((1-sigca(i))*ca(i+1)+2*sigca(i)*ca(i)-(1+sigca(i))*ca(i-1)) &
 &               +0.5*dt*Rca(i)
                 cohalf(i)=co(i)-a*w(i)*((1-sigco(i))*co(i+1)+2*sigco(i)*co(i)-(1+sigco(i))*co(i-1)) &
 &               +0.5*dt*Rco(i)
               else
+! Case: Porosity is not small -> include diffusion with central differences
                 cahalf(i)=ca(i)-a*w(i)*((1-sigca(i))*ca(i+1)+2*sigca(i)*ca(i)-(1+sigca(i))*ca(i-1)) &
 &               +b*(ph(i+1)*dca(i+1)+ph(i)*dca(i))*(ca(i+1)-ca(i))/ph(i) &
 &               -b*(ph(i-1)*dca(i-1)+ph(i)*dca(i))*(ca(i)-ca(i-1))/ph(i)+0.5*dt*Rca(i)
@@ -443,22 +476,30 @@
 &               +b*(ph(i+1)*dco(i+1)+ph(i)*dco(i))*(co(i+1)-co(i))/ph(i) &
 &               -b*(ph(i-1)*dco(i-1)+ph(i)*dco(i))*(co(i)-co(i-1))/ph(i)+0.5*dt*Rco(i)
               endif
+! Case: if projected ca & co are small, set to 0
               if(cahalf(i).lt.1.d-15) cahalf(i)=0.
               if(cohalf(i).lt.1.d-15) cohalf(i)=0.         
 30         continue
+
+! BOTTOM
               phalf(n)=ph(n)+2*a*(sigpo(n-1)*ph(n-1)*w(n-1)-sigpo(n)*ph(n)*w(n)) &
 &             +4*b*difpor*(ph(n-1)-ph(n))+0.5*dt*Rp(n)
+! Cap projected porosity: minimum projected value is eps
               if(phalf(n).lt.eps) phalf(n)=eps
-              if(1-phalf(n).lt.eps) phalf(n)=1.-eps                   
+! Cap projected porosity: maximum projected value is 1-eps
+              if(1-phalf(n).lt.eps) phalf(n)=1.-eps  
+! Case: porosity is small: use F-V                 
               if (ph(n).le.eps) then          
                 cahalf(n)=ca(n)-2*a*w(n)*sigca(n)*(ca(n)-ca(n-1)) +0.5*dt*Rca(n)
                 cohalf(n)=co(n)-2*a*w(n)*sigco(n)*(co(n)-co(n-1)) +0.5*dt*Rco(n)
+! Case: porosity is not small -> use FV and central diff for diffusion
              else  
                 cahalf(n)=ca(n)-2*a*w(n)*sigca(n)*(ca(n)-ca(n-1)) &
 &               +2*b*(ph(n-1)*dca(n-1)+ph(n)*dca(n))*(ca(n-1)-ca(n))/ph(n)+0.5*dt*Rca(n)
                 cohalf(n)=co(n)-2*a*w(n)*sigco(n)*(co(n)-co(n-1)) &
 &               +2*b*(ph(n-1)*dco(n-1)+ph(n)*dco(n))*(co(n-1)-co(n))/ph(n)+0.5*dt*Rco(n)
              endif
+! Cap ca & co if they are too small
              if(cahalf(n).lt.1.d-15) cahalf(n)=0.
              if(cohalf(n).lt.1.d-15) cohalf(n)=0.
            return
@@ -677,6 +718,9 @@
 	  real*8 a(0:1000),b(0:1000),c(0:1000),r(0:1000),sol(0:1000)
 	  real*8 h(0:1000),g(0:1000),denom,t
 	  INTEGER m,i
+! t: time, used for debugging only
+! m: no of grid points
+! a,b,c,r,sol
 	  g(m-1)=-a(m)/b(m)
 	  h(m-1)=r(m)/b(m)
 	  do 10 i=m-2,0,-1
@@ -747,7 +791,7 @@
            m=2.48
            nn=2.8                   
            S=0.1
-           bb=5.0d0
+           bb=10.0d0
            phiinf=eps
 !  new incoming sediment          
            phi0=0.8 
