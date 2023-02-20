@@ -29,7 +29,7 @@ $(target): src/lheureux.f
 
 $(new_target): $(object_files)
 	@mkdir -p $(@D)
-	gfortran $(libs) $^ -o $@
+	gfortran $^ $(libs) -o $@
 
 # ENTANGLED + PANDOC PART
 
