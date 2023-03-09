@@ -848,7 +848,7 @@
            P(32)=beta/Vscale
            P(34)=phiinf
 ! Porosity diffusion.  9.8 is g; 100 converts 1/cm to 1/m
-           P(35)=100.*beta*phi00*3/((phi00-phiinf)*bb*rhow*9.8*(1-phi00))/D0ca
+           P(35)=100.*beta*phi00**3/((phi00-phiinf)*bb*rhow*9.8*(1-phi00))/D0ca
 !  case where all densities are equal to rhos
            P(7)=ccal0
            P(9)=0.
