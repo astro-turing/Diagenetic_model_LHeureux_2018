@@ -24,7 +24,7 @@ class Scenario:
     Ka: quantity     = 10**(-6.19) * u.M**2
     Kc: quantity     = 10**(-6.37) * u.M**2
     beta: quantity   = 0.1 * u.cm / u.a
-    b: quantity      = 5.0 / u.kPa
+    b: quantity      = 10.0 / u.kPa
     k1: quantity     = 1.0 / u.a
     k2: quantity     = 1.0 / u.a
     k3: quantity     = 0.1 / u.a
@@ -45,14 +45,19 @@ class Scenario:
     xcemf: quantity  = 1000.0 * u.cm
     length: quantity = 500.0 * u.cm
     Th: quantity     = 100.0 * u.cm      # h_d   (height of dissolution zone)
+    phi00: quantity  = 0.8 * u.dimensionless
+    ca00: quantity   = 0.326e-3 * u.M    # sqrt(Kc) / 2
+    co300: quantity  = 0.326e-3 * u.M    # sqrt(Kc) / 2
+    ccal00: quantity = 0.3 * u.dimensionless
+    cara00: quantity = 0.6 * u.dimensionless
 
 @dataclass
 class Solver:
-    dt: float     = 5.e-6
-    eps: float    = 1.e-6
-    tmax: int     = 200_000
+    dt: float     = 1.e-5
+    eps: float    = 1.e-2
+    tmax: int     = 100_000
     outt: int     =   1_000      # timesteps inbetween writing
-    outx: int     =  50_000
+    outx: int     =  25_000
     N: int        = 200
 
 def cAthy(s: Scenario):

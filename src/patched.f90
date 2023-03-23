@@ -3,6 +3,7 @@
 !  Rythmite limestone/marl - semiimplicit diffusion on c,po and explicit advection on CA,ARA with upwind scheme
 !  Main code
 program marl_PDE
+    use hdf5
     implicit none
     real*8 pho(0:1000),cao(0:1000),coo(0:1000),ARAo(0:1000),CALo(0:1000)
     real*8 ph(0:1000),ca(0:1000),co(0:1000),ARA(0:1000),CAL(0:1000),U(0:1000),W(0:1000)
@@ -10,7 +11,15 @@ program marl_PDE
     real*8 Rca(0:1000),Rco(0:1000), RAR(0:1000),RCAL(0:1000),RARdum(0:1000),RCALdum(0:1000)
     real*8 OC(0:1000),OA(0:1000),t,dt,dx, P(35),dca(0:1000),dco(0:1000),sigca(0:1000),sigco(0:1000)
     real*8 Rp(0:1000),te,S(0:1000),Sdum(0:1000),Udum(0:1000),sigpo(0:1000)
-    integer tmax,j ,outx,i,N,outt
+    integer tmax,j ,outx,i,N,outt,hdferr
+    integer(HID_T) :: file_handle, space_handle, row_handle, dataset_handle
+    ! CHARACTER(len=1024) :: group_name
+    integer(HSIZE_T), DIMENSION(1:2) :: data_size
+    integer(HSIZE_T), DIMENSION(1:2) :: offset = (/0,0/)
+    integer(HSIZE_T), DIMENSION(1:2) :: stride = (/1,1/)
+    integer(HSIZE_T), DIMENSION(1:2) :: block  = (/1,1/)
+    
+    common/io/ file_handle
     common/general/ pho,cao,coo, ARAo,CALo,tmax,outx,outt, N
     common/par/P
 
@@ -26,6 +35,28 @@ program marl_PDE
     open(13,file='marlstuff')
     ! Prepare the run. INIT gets all parameters and initial conditions
     call init
+    data_size(1) = tmax / outt
+    data_size(2) = N
+
+    call h5open_f(hdferr)
+    call h5fcreate_f("output.h5", H5F_ACC_TRUNC_F, file_handle, hdferr)
+    call h5screate_simple_f(2, data_size, space_handle, hdferr)
+    call h5dcreate_f(file_handle, "aragonite", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
+    call h5dclose_f(dataset_handle, hdferr)
+    call h5dcreate_f(file_handle, "calcite", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
+    call h5dclose_f(dataset_handle, hdferr)
+    call h5dcreate_f(file_handle, "carbonate", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
+    call h5dclose_f(dataset_handle, hdferr)
+    call h5dcreate_f(file_handle, "calcium", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
+    call h5dclose_f(dataset_handle, hdferr)
+    call h5dcreate_f(file_handle, "porosity", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
+    call h5dclose_f(dataset_handle, hdferr)
+    call h5sclose_f(space_handle, hdferr)
+
+    ! limit hdf5 data space to one row at a time
+    data_size(1) = 1
+    call h5screate_simple_f(2, data_size, row_handle, hdferr)
+
     dt=P(15)
     dx=P(16)
        ! ph=porosity, ca = calcium ion, co=carbonate ion, ARA=aragonite, CAL=calcite
@@ -70,6 +101,37 @@ program marl_PDE
         call auxf(t,n,ph,ca,co,ARA,CAL,U,S,W,OC,OA,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,RAR,RCAL)
         !  Generates time series at every outt
         if (j/outt*outt.eq.j) then
+            call h5dopen_f(file_handle, "aragonite", dataset_handle, hdferr)
+            call h5dget_space_f(dataset_handle, space_handle, hdferr)
+            call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr, stride, block)
+            call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, ara, data_size, hdferr, row_handle, space_handle)
+            call h5sclose_f(space_handle, hdferr)
+            call h5dclose_f(dataset_handle, hdferr)
+            call h5dopen_f(file_handle, "calcite", dataset_handle, hdferr)
+            call h5dget_space_f(dataset_handle, space_handle, hdferr)
+            call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
+            call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, cal, data_size, hdferr, row_handle, space_handle)
+            call h5sclose_f(space_handle, hdferr)
+            call h5dclose_f(dataset_handle, hdferr)
+            call h5dopen_f(file_handle, "carbonate", dataset_handle, hdferr)
+            call h5dget_space_f(dataset_handle, space_handle, hdferr)
+            call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
+            call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, co, data_size, hdferr, row_handle, space_handle)
+            call h5sclose_f(space_handle, hdferr)
+            call h5dclose_f(dataset_handle, hdferr)
+            call h5dopen_f(file_handle, "calcium", dataset_handle, hdferr)
+            call h5dget_space_f(dataset_handle, space_handle, hdferr)
+            call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
+            call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, ca, data_size, hdferr, row_handle, space_handle)
+            call h5sclose_f(space_handle, hdferr)
+            call h5dclose_f(dataset_handle, hdferr)
+            call h5dopen_f(file_handle, "porosity", dataset_handle, hdferr)
+            call h5dget_space_f(dataset_handle, space_handle, hdferr)
+            call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
+            call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, ph, data_size, hdferr, row_handle, space_handle)
+            call h5sclose_f(space_handle, hdferr)
+            call h5dclose_f(dataset_handle, hdferr)
+            offset(1) = offset(1) + 1
             write (12,100) t,ara(N/4),ara(N/2),ara(3*N/4),ara(N),cal(N/4),cal(N/2),cal(3*N/4),cal(N),&
              ph(N/4),ph(N/2),ph(3*N/4),ph(N),ca(N/4),ca(N/2),ca(3*N/4),ca(N),&
              co(N/4),co(N/2),co(3*N/4),co(N),U(N),W(N),OC(N),OA(N),RAR(N),RCAL(N)
@@ -734,7 +796,10 @@ end
 
 ! This routine defines all parameter values and initial conditions, to be passed in vector P.
 subroutine init
+    use cfgio_mod, only: cfg_t, parse_cfg
     implicit none
+    type(cfg_t):: cfg
+
     real*8 pho(0:1000),cao(0:1000),coo(0:1000),ARAo(0:1000),CALo(0:1000)
     real*8 dt,dx, P(35),Th,mua,rhoa,rhoc,rhot,rhow,D0ca,D0co3,Ka,Kc,beta,k2,k3,length,xdis
     real*8 m,nn,S,phi0,ca0,co30,ccal0,cara0,Vscale,rhos0,Xs,Ts,eps
@@ -742,6 +807,9 @@ subroutine init
     integer tmax,N,outt,i,outx
     common/general/ pho,cao,coo, ARAo,CALo,tmax,outx,outt, N
     common/par/P
+
+    cfg = parse_cfg("input.cfg")
+
     !   DIMENSIONLESS TIMES, tmax=max time index, outx = time index for graphic x output
     !   outt= time index for graphic t outputs at four points
     !  dt, dx = discrete steps (dimensionless) ; N +1 = total number of nodes;
@@ -754,47 +822,101 @@ subroutine init
     !  bb=sediment compressibility in (kPa)-1
     !
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    dt=1.d-5
-    xdis=50.
-    length=500.
-    Th=100.
-    eps=1.d-2
-    tmax=100000
-    outt=1000
-    outx=tmax/4
-    N=200
-    mua=100.09
-    rhoa=2.95
-    rhoc=2.71
-    rhot=2.8
-    rhow=1.023
-    D0ca=131.9
-    D0co3=272.6
-    Ka=10.**(-6.19)
-    Kc=10.**(-6.37)
-    beta=0.01
-    beta=0.1
-    k2=1.d-2
-    k2=1.0
-    k3=1.d-3
-    k3=0.1
-    m=2.48
-    nn=2.8
-    S=0.1
-    bb=10.0d0
-    phiinf=eps
-    !  new incoming sediment
-    phi0=0.8
-    ca0=0.5*dsqrt(Kc)
-    co30=0.5*dsqrt(Kc)
-    ccal0=0.3
-    cara0=0.6
-    !  old uniform sediment
-    phi00=0.8
-    ca00=0.5*dsqrt(Kc)
-    co300=0.5*dsqrt(Kc)
-    ccal00=0.3
-    cara00=0.6
+    call cfg%get("Solver", "dt", dt)
+    call cfg%get("Solver", "eps", eps)
+    call cfg%get("Solver", "tmax", tmax)
+    call cfg%get("Solver", "outt", outt)
+    call cfg%get("Solver", "outx", outx)
+    call cfg%get("Solver", "N", N)
+    ! dt=1.d-6
+    ! length=2000.
+    ! xdis=50.
+    ! xcem=-100.
+    ! xcemf=1000.
+    ! length=500.
+    !   Th=100.
+    !   eps=1.d-2
+    !   tmax=12
+    !   outt=1
+    !   outx=tmax/4
+    !   N=200
+    call cfg%get("Scenario", "xdis", xdis)
+    ! call cfg%get("Scenario", "xcem", xcem)
+    ! call cfg%get("Scenario", "xcemf", xcemf)
+    call cfg%get("Scenario", "length", length)
+    call cfg%get("Scenario", "Th", Th)
+    call cfg%get("Scenario", "mua", mua)
+    ! call cfg%get("Scenario", "muw", muw) not used
+    call cfg%get("Scenario", "rhoa", rhoa)
+    call cfg%get("Scenario", "rhoc", rhoc)
+    call cfg%get("Scenario", "rhot", rhot)
+    call cfg%get("Scenario", "rhow", rhow)
+    call cfg%get("Scenario", "D0ca", D0ca)
+    call cfg%get("Scenario", "D0co3", D0co3)
+    call cfg%get("Scenario", "Ka", Ka)
+    call cfg%get("Scenario", "Kc", Kc)
+    call cfg%get("Scenario", "beta", beta)
+    ! call cfg%get("Scenario", "k1", k1)
+    call cfg%get("Scenario", "k2", k2)
+    call cfg%get("Scenario", "k3", k3)
+    call cfg%get("Scenario", "nn", nn)
+    call cfg%get("Scenario", "m", m)
+    call cfg%get("Scenario", "S", S)
+    call cfg%get("Scenario", "b", bb)
+    ! call cfg%get("Scenario", "cAthy", cAthy)
+    call cfg%get("Scenario", "phiinf", phiinf)
+    ! call cfg%get("Scenario", "phiin", phiin)
+    call cfg%get("Scenario", "phi0", phi0)
+    call cfg%get("Scenario", "ca0", ca0)
+    call cfg%get("Scenario", "co30", co30)
+    call cfg%get("Scenario", "ccal0", ccal0)
+    call cfg%get("Scenario", "cara0", cara0)
+    call cfg%get("Scenario", "phi00", phi00)
+    call cfg%get("Scenario", "ca00", ca00)
+    call cfg%get("Scenario", "co300", co300)
+    call cfg%get("Scenario", "ccal00", ccal00)
+    call cfg%get("Scenario", "cara00", cara00)
+    ! dt=1.d-5
+    ! xdis=50.
+    ! length=500.
+    ! Th=100.
+    ! eps=1.d-2
+    ! tmax=100000
+    ! outt=1000
+    ! outx=tmax/4
+    ! N=200
+    ! mua=100.09
+    ! rhoa=2.95
+    ! rhoc=2.71
+    ! rhot=2.8
+    ! rhow=1.023
+    ! D0ca=131.9
+    ! D0co3=272.6
+    ! Ka=10.**(-6.19)
+    ! Kc=10.**(-6.37)
+    ! beta=0.01
+    ! beta=0.1
+    ! k2=1.d-2
+    ! k2=1.0
+    ! k3=1.d-3
+    ! k3=0.1
+    ! m=2.48
+    ! nn=2.8
+    ! S=0.1
+    ! bb=10.0d0
+    ! phiinf=eps
+    ! !  new incoming sediment
+    ! phi0=0.8
+    ! ca0=0.5*dsqrt(Kc)
+    ! co30=0.5*dsqrt(Kc)
+    ! ccal0=0.3
+    ! cara0=0.6
+    ! !  old uniform sediment
+    ! phi00=0.8
+    ! ca00=0.5*dsqrt(Kc)
+    ! co300=0.5*dsqrt(Kc)
+    ! ccal00=0.3
+    ! cara00=0.6
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ! In other versions, beta was used to scale the velocity
     ! Scale velocity with beta
