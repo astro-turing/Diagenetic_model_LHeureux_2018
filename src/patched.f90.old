@@ -1,234 +1,5 @@
----
-title: L'Heureux Fortran model
-subtitle: total decomposition of a Fortran code
-author: Johan Hidding
----
-
-- [Python interface](./python-interface.html)
-
-# Main
-The `COMMON` blocks in fortran create a kind of global variables. Here they're used to store the free parameters of the model. The array `P(35)` is used to store all input parameters and are used throughout. I added some variables that handle output to HDF5.
-
-``` {.fortran #main-declare-variables}
-REAL*8 pho(0:1000),cao(0:1000),coo(0:1000),ARAo(0:1000),CALo(0:1000),ph(0:1000)
-REAL*8 ca(0:1000),co(0:1000),ARA(0:1000),CAL(0:1000),U(0:1000),W(0:1000)
-REAL*8 phalf(0:1000),ARAhalf(0:1000),CALhalf(0:1000),cahalf(0:1000)
-REAL*8 cohalf(0:1000),whalf(0:1000)
-REAL*8 Rca(0:1000),Rco(0:1000),RAR(0:1000),RCAL(0:1000),RARdum(0:1000),RCALdum(0:1000)
-REAL*8 OC(0:1000),OA(0:1000),t,dt,dx,P(35),dca(0:1000),dco(0:1000)
-REAL*8 sigca(0:1000),sigco(0:1000),Rp(0:1000),te,wap,S(0:1000)
-REAL*8 Sdum(0:1000),Udum(0:1000),sigpo(0:1000)
-
-INTEGER tmax,j,outx,i,N,outt,hdferr
-INTEGER(HID_T) :: file_handle, space_handle, row_handle, dataset_handle
-! CHARACTER(len=1024) :: group_name
-INTEGER(HSIZE_T), DIMENSION(1:2) :: data_size
-INTEGER(HSIZE_T), DIMENSION(1:2) :: offset = (/0,0/)
-INTEGER(HSIZE_T), DIMENSION(1:2) :: stride = (/1,1/)
-INTEGER(HSIZE_T), DIMENSION(1:2) :: block  = (/1,1/)
-
-COMMON/io/ file_handle
-COMMON/general/ pho,cao,coo,ARAo,CALo,tmax,outx,outt,N
-COMMON/par/P
-````
-
-## Parameters `P(35)`
-
-::: {.table}
-| Number | Symbol             | Remarks                                                                 |
-| ---:   | ---                | ---                                                                     |
-| 1      | $m$                |                                                                         |
-| 2      | $n$                |                                                                         |
-| 3      | $\lambda$          | $k_3 / k_2$                                                             |
-| 4      | $\nu_1$            | $k_1 / k_2$                                                             |
-| 5      | $d_{\rm Ar}$       |                                                                         |
-| 6      | $\delta$           |                                                                         |
-| 7      |                    | $\rho_s c_{\rm Cal}^0 / \rho_c$, or $c^0_{\rm Cal}$                      |
-| 8      | $\phi_0$           |                                                                         |
-| 9      |                    | $1 - \rho_t / \rho_c$ or $0$                                            |
-| 10     |                    | $1 - \rho_t / \rho_a$ or $0$                                            |
-| 11     |                    | $\rho_t / \rho_w$ or $\rho_s^0 / \rho_w$                                |
-| 12     |                    | $\rho_c / \rho_w$ or $\rho_s^0 / \rho_w$                                |
-| 13     |                    | $\rho_s^0/\rho_w - 1$                                                   |
-| 14     | $T_h$              | Something set to 100                                                    |
-| 15     | $\Delta t$         |                                                                         |
-| 16     | $\Delta x$         |                                                                         |
-| 17     |                    | $1 - C_A^0 - C_C^0$                                                     |
-| 18     | $C_A^0$            |                                                                         |
-| 19     | $C_C^0$            |                                                                         |
-| 20     |                    | $\rho_s^0 / \rho_w$                                                     |
-| 21     |                    | $a / X^*$                                                               |
-| 22     |                    | $x_d / X^*$                                                             |
-| 23     |                    | $S / V_{\rm scale}$                                                     |
-| 24     |                    | $K_C / K_A$                                                             |
-| 25     |                    | $D^0_{\rm CO3} / D^0_{\rm Ca}$                                          |
-| 26     |                    | $k_2 T^*$                                                               |
-| 27     |                    | $\rho_c / \rho_a$ or $1$                                                |
-| 28     |                    | $b / X^*$                                                               |
-| 29     | $\epsilon$         | Some small number                                                       |
-| 30     |                    | `xcem/Xs`???                                                            |
-| 31     |                    | `xcemf/Xs`???                                                           |
-| 32     |                    | $\beta / V_{\rm scale}$                                                 |
-| 33     |                    | $1/(c_{\rm Athy}X^*)$                                                   |
-| 34     | $\phi_{\infty}$    |                                                                         |
-| 35     | ${\rm difpor}$     | $\beta \phi_0^3 / ((\phi_0 - \phi_{\infty})c_{\rm Athy}D^0_{\rm Ca})$   |
-:::
-
-``` {.fortran .hide #main-open-output-files}
-OPEN(8,file='amarlt1')
-OPEN(9,FILE='amarlt2')
-OPEN(10,FILE='amarlt3')
-OPEN(11,FILE='amarlt4')
-OPEN(12,FILE='amarlx')
-OPEN(13,FILE='marlstuff')
-```
-
-``` {.fortran .hide #main-initialize}
-call init
-data_size(1) = tmax / outt
-data_size(2) = N
-
-CALL h5open_f(hdferr)
-CALL h5fcreate_f("output.h5", H5F_ACC_TRUNC_F, file_handle, hdferr)
-CALL h5screate_simple_f(2, data_size, space_handle, hdferr)
-CALL h5dcreate_f(file_handle, "aragonite", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
-CALL h5dclose_f(dataset_handle, hdferr)
-CALL h5dcreate_f(file_handle, "calcite", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
-CALL h5dclose_f(dataset_handle, hdferr)
-CALL h5dcreate_f(file_handle, "carbonate", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
-CALL h5dclose_f(dataset_handle, hdferr)
-CALL h5dcreate_f(file_handle, "calcium", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
-CALL h5dclose_f(dataset_handle, hdferr)
-CALL h5dcreate_f(file_handle, "porosity", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
-CALL h5dclose_f(dataset_handle, hdferr)
-CALL h5sclose_f(space_handle, hdferr)
-
-! limit hdf5 data space to one row at a time
-data_size(1) = 1
-CALL h5screate_simple_f(2, data_size, row_handle, hdferr)
-
-dt=P(15)
-dx=P(16)
-do i=0,N
-    ph(i)=pho(i)
-    ca(i)=cao(i)
-    co(i)=coo(i)
-    ARA(i)=ARAo(i)
-    CAL(i)=CALo(i)
-end do
-t=0.0
-```
-
-``` {.fortran .hide #main-write}
-WRITE(8,103) 'x ','AR','CA','Po','Ca','CO','TE','U ','W ','OC','OA','Rp'
-WRITE(9,103) 'x ','AR','CA','Po','Ca','CO','TE','U ','W ','OC','OA','Rp'
-WRITE(10,103) 'x ','AR','CA','Po','Ca','CO','TE','U ','W ','OC','OA','Rp'
-WRITE(11,103) 'x ','AR','CA','Po','Ca','CO','TE','U ','W ','OC','OA','Rp'
-WRITE(12,101)'t ','AR','AR','AR','AR','CA','CA','CA','CA','P ','P ','P ','P ','ca','ca','ca','ca','co','co','co','co','U ','W '          
-WRITE(13,110) 't ','p1','k1','u1','p2','k2','u2','p3','k3','u3'
-```
-
-``` {.fortran #main-call-auxf}
-call auxf(t,n,ph,ca,co,ARA,CAL,U,S,W,OC,OA,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,RAR,RCAL)
-```
-
-``` {.fortran .hide #main-write-again}
-write (12,100) t,P(18),P(18),P(18),P(18),P(19),P(19),P(19),P(19),P(8),P(8),P(8),P(8), &
-     & ca(N/4),ca(N/2),ca(3*N/4),ca(N),co(N/4),co(N/2),co(3*N/4),co(N),U(N/4),W(N/4)
-```
-
-## Integration
-``` {.fortran #time-integration}
-call projectX(n,ARA,CAL,U,S,RAR,RCAL,ARAhalf,CALhalf)
-call projectY(n,ph,ca,co,W,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf,cahalf,cohalf)
-do j=1,tmax
-    <<log-progress>>
-    call auxf(t,n,phalf,cahalf,cohalf,ARAhalf,CALhalf,Udum,Sdum,Whalf,OC,OA,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,RARdum,RCALdum)   
-    call CRANK(t,n,ph,ca,co,Whalf,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf)
-    call upwind(n,ARA,CAL,U,S,RAR,RCAL)
-    t=t+dt
-    call auxf(t,n,ph,ca,co,ARA,CAL,U,S,W,OC,OA,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,RAR,RCAL)
-    <<write-output>>
-    call projectX(n,ARA,CAL,U,S,RAR,RCAL,ARAhalf,CALhalf)
-    call projectY(n,ph,ca,co,W,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf,cahalf,cohalf)
-end do
-```
-
-Notice, the first call to `auxf` we use all the `/.*half/` entities. Information is written to several dummy variables that are not used and `Whalf`, `dca`, and `dco`, the signs and the reaction terms. The second call to `auxf` (after Crank-Nicolson and Upwind integration), the true parameters are updated. 
-
-``` {.fortran .hide #log-progress}
-IF(j/50000 *50000.eq.j) WRITE(6,*) 'doing t=',j*dt
-```
-
-``` {.fortran #write-output}
-! hdf5 output
-IF(j/outt*outt.eq.j) THEN
-   call h5dopen_f(file_handle, "aragonite", dataset_handle, hdferr)
-   call h5dget_space_f(dataset_handle, space_handle, hdferr)
-   call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr, stride, block)
-   call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, ara, data_size, hdferr, row_handle, space_handle)
-   call h5sclose_f(space_handle, hdferr)
-   call h5dclose_f(dataset_handle, hdferr)
-   call h5dopen_f(file_handle, "calcite", dataset_handle, hdferr)
-   call h5dget_space_f(dataset_handle, space_handle, hdferr)
-   call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
-   call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, cal, data_size, hdferr, row_handle, space_handle)
-   call h5sclose_f(space_handle, hdferr)
-   call h5dclose_f(dataset_handle, hdferr)
-   call h5dopen_f(file_handle, "carbonate", dataset_handle, hdferr)
-   call h5dget_space_f(dataset_handle, space_handle, hdferr)
-   call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
-   call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, co, data_size, hdferr, row_handle, space_handle)
-   call h5sclose_f(space_handle, hdferr)
-   call h5dclose_f(dataset_handle, hdferr)
-   call h5dopen_f(file_handle, "calcium", dataset_handle, hdferr)
-   call h5dget_space_f(dataset_handle, space_handle, hdferr)
-   call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
-   call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, ca, data_size, hdferr, row_handle, space_handle)
-   call h5sclose_f(space_handle, hdferr)
-   call h5dclose_f(dataset_handle, hdferr)
-   call h5dopen_f(file_handle, "porosity", dataset_handle, hdferr)
-   call h5dget_space_f(dataset_handle, space_handle, hdferr)
-   call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
-   call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, ph, data_size, hdferr, row_handle, space_handle)
-   call h5sclose_f(space_handle, hdferr)
-   call h5dclose_f(dataset_handle, hdferr)
-   offset(1) = offset(1) + 1
-```
-
-``` {.fortran .hide #write-output}
-    WRITE (12,100) t,ara(N/4),ara(N/2),ara(3*N/4),ara(N),cal(N/4),&
-    & cal(N/2),cal(3*N/4),cal(N),ph(N/4),ph(N/2),ph(3*N/4),ph(N),&
-    & ca(N/4),ca(N/2),ca(3*N/4),ca(N),co(N/4),co(N/2),co(3*N/4),&
-    & co(N),U(N/4),W(N/4)
-ENDIF
-IF(j.eq.outx) THEN
-    DO i=0,N
-        TE=1.-ara(i)-cal(i)
-        write (8,102) i*dx,ara(i),cal(i),ph(i),ca(i),co(i),TE,U(i),W(i),OC(i), OA(i),Rp(i)
-    END DO
-ENDIF
-IF(j.eq.2*outx) then
-    do i=0,N
-        TE=1-ara(i)-cal(i)
-        write (9,102) i*dx,ara(i),cal(i),ph(i),ca(i),co(i),TE,U(i),W(i),OC(i), OA(i),Rp(i)
-    end do
-endif
-IF(j.eq.3*outx) then
-    do i=0,N      
-        TE=1-ara(i)-cal(i)
-        write (10,102) i*dx,ara(i),cal(i),ph(i),ca(i),co(i),TE,U(i),W(i),OC(i), OA(i),Rp(i)
-    end do
-endif
-IF(j.eq.4*outx) then              
-    do i=0,N     
-        TE=1-ara(i)-cal(i) 
-        write (11,102) i*dx,ara(i),cal(i),ph(i),ca(i),co(i),TE,U(i),W(i),OC(i), OA(i),Rp(i)
-    end do
-endif
-```
-
-``` {.fortran file=src/patched.f90.old}
+! ~\~ language=Fortran filename=src/patched.f90.old
+! ~\~ begin <<lit/index.md|src/patched.f90.old>>[init]
 !     Last change:  IL   19 Mar 2014    5:25 pm
 
 !  Rythmite limestone/marl - semiimplicit diffusion on c,po and explicit advection on M with upwind scheme
@@ -236,16 +7,171 @@ endif
        program marl_PDE
            use hdf5
            implicit none
-           <<main-declare-variables>>
-           <<main-open-output-files>>
-           <<main-initialize>>
-           <<main-write>>
-           <<main-call-auxf>>
-           <<main-write-again>>
+           ! ~\~ begin <<lit/index.md|main-declare-variables>>[init]
+           REAL*8 pho(0:1000),cao(0:1000),coo(0:1000),ARAo(0:1000),CALo(0:1000),ph(0:1000)
+           REAL*8 ca(0:1000),co(0:1000),ARA(0:1000),CAL(0:1000),U(0:1000),W(0:1000)
+           REAL*8 phalf(0:1000),ARAhalf(0:1000),CALhalf(0:1000),cahalf(0:1000)
+           REAL*8 cohalf(0:1000),whalf(0:1000)
+           REAL*8 Rca(0:1000),Rco(0:1000),RAR(0:1000),RCAL(0:1000),RARdum(0:1000),RCALdum(0:1000)
+           REAL*8 OC(0:1000),OA(0:1000),t,dt,dx,P(35),dca(0:1000),dco(0:1000)
+           REAL*8 sigca(0:1000),sigco(0:1000),Rp(0:1000),te,wap,S(0:1000)
+           REAL*8 Sdum(0:1000),Udum(0:1000),sigpo(0:1000)
+
+           INTEGER tmax,j,outx,i,N,outt,hdferr
+           INTEGER(HID_T) :: file_handle, space_handle, row_handle, dataset_handle
+           ! CHARACTER(len=1024) :: group_name
+           INTEGER(HSIZE_T), DIMENSION(1:2) :: data_size
+           INTEGER(HSIZE_T), DIMENSION(1:2) :: offset = (/0,0/)
+           INTEGER(HSIZE_T), DIMENSION(1:2) :: stride = (/1,1/)
+           INTEGER(HSIZE_T), DIMENSION(1:2) :: block  = (/1,1/)
+
+           COMMON/io/ file_handle
+           COMMON/general/ pho,cao,coo,ARAo,CALo,tmax,outx,outt,N
+           COMMON/par/P
+           ! ~\~ end
+           ! ~\~ begin <<lit/index.md|main-open-output-files>>[init]
+           OPEN(8,file='amarlt1')
+           OPEN(9,FILE='amarlt2')
+           OPEN(10,FILE='amarlt3')
+           OPEN(11,FILE='amarlt4')
+           OPEN(12,FILE='amarlx')
+           OPEN(13,FILE='marlstuff')
+           ! ~\~ end
+           ! ~\~ begin <<lit/index.md|main-initialize>>[init]
+           call init
+           data_size(1) = tmax / outt
+           data_size(2) = N
+
+           CALL h5open_f(hdferr)
+           CALL h5fcreate_f("output.h5", H5F_ACC_TRUNC_F, file_handle, hdferr)
+           CALL h5screate_simple_f(2, data_size, space_handle, hdferr)
+           CALL h5dcreate_f(file_handle, "aragonite", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
+           CALL h5dclose_f(dataset_handle, hdferr)
+           CALL h5dcreate_f(file_handle, "calcite", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
+           CALL h5dclose_f(dataset_handle, hdferr)
+           CALL h5dcreate_f(file_handle, "carbonate", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
+           CALL h5dclose_f(dataset_handle, hdferr)
+           CALL h5dcreate_f(file_handle, "calcium", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
+           CALL h5dclose_f(dataset_handle, hdferr)
+           CALL h5dcreate_f(file_handle, "porosity", H5T_NATIVE_DOUBLE, space_handle, dataset_handle, hdferr)
+           CALL h5dclose_f(dataset_handle, hdferr)
+           CALL h5sclose_f(space_handle, hdferr)
+
+           ! limit hdf5 data space to one row at a time
+           data_size(1) = 1
+           CALL h5screate_simple_f(2, data_size, row_handle, hdferr)
+
+           dt=P(15)
+           dx=P(16)
+           do i=0,N
+               ph(i)=pho(i)
+               ca(i)=cao(i)
+               co(i)=coo(i)
+               ARA(i)=ARAo(i)
+               CAL(i)=CALo(i)
+           end do
+           t=0.0
+           ! ~\~ end
+           ! ~\~ begin <<lit/index.md|main-write>>[init]
+           WRITE(8,103) 'x ','AR','CA','Po','Ca','CO','TE','U ','W ','OC','OA','Rp'
+           WRITE(9,103) 'x ','AR','CA','Po','Ca','CO','TE','U ','W ','OC','OA','Rp'
+           WRITE(10,103) 'x ','AR','CA','Po','Ca','CO','TE','U ','W ','OC','OA','Rp'
+           WRITE(11,103) 'x ','AR','CA','Po','Ca','CO','TE','U ','W ','OC','OA','Rp'
+           WRITE(12,101)'t ','AR','AR','AR','AR','CA','CA','CA','CA','P ','P ','P ','P ','ca','ca','ca','ca','co','co','co','co','U ','W '          
+           WRITE(13,110) 't ','p1','k1','u1','p2','k2','u2','p3','k3','u3'
+           ! ~\~ end
+           ! ~\~ begin <<lit/index.md|main-call-auxf>>[init]
+           call auxf(t,n,ph,ca,co,ARA,CAL,U,S,W,OC,OA,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,RAR,RCAL)
+           ! ~\~ end
+           ! ~\~ begin <<lit/index.md|main-write-again>>[init]
+           write (12,100) t,P(18),P(18),P(18),P(18),P(19),P(19),P(19),P(19),P(8),P(8),P(8),P(8), &
+                & ca(N/4),ca(N/2),ca(3*N/4),ca(N),co(N/4),co(N/2),co(3*N/4),co(N),U(N/4),W(N/4)
+           ! ~\~ end
            wap=w(0)
            wap=wap    
 
-           <<time-integration>>
+           ! ~\~ begin <<lit/index.md|time-integration>>[init]
+           call projectX(n,ARA,CAL,U,S,RAR,RCAL,ARAhalf,CALhalf)
+           call projectY(n,ph,ca,co,W,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf,cahalf,cohalf)
+           do j=1,tmax
+               ! ~\~ begin <<lit/index.md|log-progress>>[init]
+               IF(j/50000 *50000.eq.j) WRITE(6,*) 'doing t=',j*dt
+               ! ~\~ end
+               call auxf(t,n,phalf,cahalf,cohalf,ARAhalf,CALhalf,Udum,Sdum,Whalf,OC,OA,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,RARdum,RCALdum)   
+               call CRANK(t,n,ph,ca,co,Whalf,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf)
+               call upwind(n,ARA,CAL,U,S,RAR,RCAL)
+               t=t+dt
+               call auxf(t,n,ph,ca,co,ARA,CAL,U,S,W,OC,OA,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,RAR,RCAL)
+               ! ~\~ begin <<lit/index.md|write-output>>[init]
+               ! hdf5 output
+               IF(j/outt*outt.eq.j) THEN
+                  call h5dopen_f(file_handle, "aragonite", dataset_handle, hdferr)
+                  call h5dget_space_f(dataset_handle, space_handle, hdferr)
+                  call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr, stride, block)
+                  call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, ara, data_size, hdferr, row_handle, space_handle)
+                  call h5sclose_f(space_handle, hdferr)
+                  call h5dclose_f(dataset_handle, hdferr)
+                  call h5dopen_f(file_handle, "calcite", dataset_handle, hdferr)
+                  call h5dget_space_f(dataset_handle, space_handle, hdferr)
+                  call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
+                  call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, cal, data_size, hdferr, row_handle, space_handle)
+                  call h5sclose_f(space_handle, hdferr)
+                  call h5dclose_f(dataset_handle, hdferr)
+                  call h5dopen_f(file_handle, "carbonate", dataset_handle, hdferr)
+                  call h5dget_space_f(dataset_handle, space_handle, hdferr)
+                  call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
+                  call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, co, data_size, hdferr, row_handle, space_handle)
+                  call h5sclose_f(space_handle, hdferr)
+                  call h5dclose_f(dataset_handle, hdferr)
+                  call h5dopen_f(file_handle, "calcium", dataset_handle, hdferr)
+                  call h5dget_space_f(dataset_handle, space_handle, hdferr)
+                  call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
+                  call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, ca, data_size, hdferr, row_handle, space_handle)
+                  call h5sclose_f(space_handle, hdferr)
+                  call h5dclose_f(dataset_handle, hdferr)
+                  call h5dopen_f(file_handle, "porosity", dataset_handle, hdferr)
+                  call h5dget_space_f(dataset_handle, space_handle, hdferr)
+                  call h5sselect_hyperslab_f(space_handle, H5S_SELECT_SET_F, offset, data_size, hdferr)
+                  call h5dwrite_f(dataset_handle, H5T_NATIVE_DOUBLE, ph, data_size, hdferr, row_handle, space_handle)
+                  call h5sclose_f(space_handle, hdferr)
+                  call h5dclose_f(dataset_handle, hdferr)
+                  offset(1) = offset(1) + 1
+               ! ~\~ end
+               ! ~\~ begin <<lit/index.md|write-output>>[1]
+                   WRITE (12,100) t,ara(N/4),ara(N/2),ara(3*N/4),ara(N),cal(N/4),&
+                   & cal(N/2),cal(3*N/4),cal(N),ph(N/4),ph(N/2),ph(3*N/4),ph(N),&
+                   & ca(N/4),ca(N/2),ca(3*N/4),ca(N),co(N/4),co(N/2),co(3*N/4),&
+                   & co(N),U(N/4),W(N/4)
+               ENDIF
+               IF(j.eq.outx) THEN
+                   DO i=0,N
+                       TE=1.-ara(i)-cal(i)
+                       write (8,102) i*dx,ara(i),cal(i),ph(i),ca(i),co(i),TE,U(i),W(i),OC(i), OA(i),Rp(i)
+                   END DO
+               ENDIF
+               IF(j.eq.2*outx) then
+                   do i=0,N
+                       TE=1-ara(i)-cal(i)
+                       write (9,102) i*dx,ara(i),cal(i),ph(i),ca(i),co(i),TE,U(i),W(i),OC(i), OA(i),Rp(i)
+                   end do
+               endif
+               IF(j.eq.3*outx) then
+                   do i=0,N      
+                       TE=1-ara(i)-cal(i)
+                       write (10,102) i*dx,ara(i),cal(i),ph(i),ca(i),co(i),TE,U(i),W(i),OC(i), OA(i),Rp(i)
+                   end do
+               endif
+               IF(j.eq.4*outx) then              
+                   do i=0,N     
+                       TE=1-ara(i)-cal(i) 
+                       write (11,102) i*dx,ara(i),cal(i),ph(i),ca(i),co(i),TE,U(i),W(i),OC(i), OA(i),Rp(i)
+                   end do
+               endif
+               ! ~\~ end
+               call projectX(n,ARA,CAL,U,S,RAR,RCAL,ARAhalf,CALhalf)
+               call projectY(n,ph,ca,co,W,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf,cahalf,cohalf)
+           end do
+           ! ~\~ end
 
 100        format (23(d12.5,1x))
 101        format (13x,23(a2,11x))
@@ -265,17 +191,7 @@ endif
            stop 'marl'
        end program
 
-<<auxf>>
-<<upwind>>
-<<project-x>>
-<<project-y>>
-<<crank-nicolson>>
-<<init>>
-```
-
-# Auxiliary functions
-
-``` {.fortran #auxf}
+! ~\~ begin <<lit/index.md|auxf>>[init]
            subroutine auxf(t,n,ph,ca,co,ARA,CAL,U,S,W,OC,OA,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,RAR,RCAL)
 ! This routine calculates all auxiliairy functions: Peclet numbers, oversaturations, reaction rates and others
            implicit none
@@ -610,18 +526,54 @@ endif
            return
            end
 !
-```
+! ~\~ end
+! ~\~ begin <<lit/index.md|upwind>>[init]
+           subroutine upwind(n,ARA,CAL,U,S,RAR,RCAL)
+! Implementation of the upwind scheme for the advection equations
+           real*8 U(0:1000),ARA(0:1000),CAL(0:1000)
+           REAL*8 RAR(0:1000),RCAL(0:1000),ARAnew(0:1000),CALnew(0:1000)
+           REAL*8 S(0:1000)
+           REAL*8 dt,dx,P(35),a
 
-# Advanced projection method
-This routine calculates the projected solid phase fields at half-time in order to treat the non-linearities. This routine writes to `ARAhalf` and `CALhalf` variables. These are only used to compute the `cahalf`, `cohalf`, and `phalf` (corresponding to $\phi$) later on.
+               integer N,i
+           COMMON/par/P
+           dx=P(16)
+           dt=P(15)
 
-Let $a = \Delta t / 2\Delta x$ be a prefactor, then for species $k = {\rm Ara}, {\rm Cal}$ compute the following,
+           a=dt/dx
+           ARAnew(0)=ARA(0)
+           CALnew(0)=CAL(0)
 
-$$k_{i + 1/2} = k_i - a u_i (k_i S_i - k_{i-1} {1 \over 2} (S_i + 1) + k_{i+1} {1 \over 2} (1 - S_i)) + {{\Delta t R^{k}_i} \over 2},$$
+           do i=1,n-1
+             ARANEW(i)=ARA(i)-a*u(i)*(ARA(i)*S(i)-ARA(i-1)*0.5*(S(i)+1.)+ARA(i+1)*0.5*(1.-S(i)))&
+ &              +dt*RAR(i)
+             CALNEW(i)=CAL(i)-a*u(i)*(CAL(i)*S(i)-CAL(i-1)*0.5*(S(i)+1.)+CAL(i+1)*0.5*(1.-S(i)))&
+ &               +dt*RCAL(i)
+             if(1-ARAnew(i)-CALnew(i).lt.1.d-70) ARAnew(i)=1-CALnew(i)
+             if(1-CALnew(i).lt.1.d-10) CALnew(i)=1.
+             if(1-ARAnew(i).lt.1.d-10) ARAnew(i)=1.
+             if(ARAnew(i).lt.1.d-70) ARAnew(i)=0.
+             if(CALnew(i).lt.1.d-70) CALnew(i)=0.
+           end do
 
-where $S_i$ is the sign of $u_i$. This corresponds to an upwind scheme, basically evaluating Equations 40 and 41 from the paper at half-time.
+             ARAnew(n)=ARA(n)-a*u(n)*S(n)*(ARA(n)-ARA(n-1))+dt*RAR(n)
+             CALnew(n)=CAL(n)-a*u(n)*S(n)*(CAL(n)-CAL(n-1))+dt*RCAL(n)
 
-``` {.fortran #project-x}
+             if(1-ARAnew(n)-CALnew(n).lt.1.d-70) ARAnew(n)=1-CALnew(n)
+             if(1-CALnew(n).lt.1.d-10) CALnew(n)=1.
+             if(1-ARAnew(n).lt.1.d-10) ARAnew(n)=1.
+             if(ARAnew(n).lt.1.d-70) ARAnew(n)=0.
+             if(CALnew(n).lt.1.d-70) CALnew(n)=0.
+
+!    update
+             do i=0,n
+                ARA(i)=ARAnew(i)
+                CAL(i)=CALnew(i)
+             end do
+           return
+           end
+! ~\~ end
+! ~\~ begin <<lit/index.md|project-x>>[init]
 subroutine projectX(n,ARA,CAL,U,S,RAR,RCAL,ARAhalf,CALhalf)
 real*8 U(0:1000),ARA(0:1000),CAL(0:1000),ARAhalf(0:1000),CALhalf(0:1000)
 REAL*8 S(0:1000)
@@ -641,47 +593,27 @@ do i=1,n-1
                &+ARA(i+1)*0.5*(1.-S(i)))+0.5*dt*RAR(i)
      CALhalf(i)=CAL(i)-a*u(i)*(CAL(i)*S(i)-CAL(i-1)*0.5*(S(i)+1.)&
                &+CAL(i+1)*0.5*(1.-S(i)))+0.5*dt*RCAL(i)
-     <<project-x-clamp-i>>
+     ! ~\~ begin <<lit/index.md|project-x-clamp-i>>[init]
+     if(1-ARAhalf(i)-CALhalf(i).lt.1.d-70) ARAhalf(i)=1-CALhalf(i)
+     if(1-CALhalf(i).lt.1.d-10) CALhalf(i)=1.
+     if(1-ARAhalf(i).lt.1.d-10) ARAhalf(i)=1.
+     if(ARAhalf(i).lt.1.d-70) ARAhalf(i)=0.
+     if(CALhalf(i).lt.1.d-70) CALhalf(i)=0.
+     ! ~\~ end
 end do 
 ARAhalf(n)=ARA(n)-a*u(n)*S(n)*(ARA(n)-ARA(n-1))+0.5*dt*RAR(n)
 CALhalf(n)=CAL(n)-a*u(n)*S(n)*(CAL(n)-CAL(n-1))+0.5*dt*RCAL(n)
-<<project-x-clamp-n>>
-return
-end
-```
-
-In this routine, the output is clamped to values between 0 and 1.
-
-``` {.fortran #project-x-clamp-i}
-if(1-ARAhalf(i)-CALhalf(i).lt.1.d-70) ARAhalf(i)=1-CALhalf(i)
-if(1-CALhalf(i).lt.1.d-10) CALhalf(i)=1.
-if(1-ARAhalf(i).lt.1.d-10) ARAhalf(i)=1.
-if(ARAhalf(i).lt.1.d-70) ARAhalf(i)=0.
-if(CALhalf(i).lt.1.d-70) CALhalf(i)=0.
-```
-
-The last time is the same, just on index `n`.
-
-``` {.fortran .hide #project-x-clamp-n}
+! ~\~ begin <<lit/index.md|project-x-clamp-n>>[init]
 if(1-ARAhalf(n)-CALhalf(n).lt.1.d-70) ARAhalf(n)=1-CALhalf(n)
 if(1-CALhalf(n).lt.1.d-10) CALhalf(n)=1.
 if(1-ARAhalf(n).lt.1.d-10) ARAhalf(n)=1.
 if(ARAhalf(n).lt.1.d-70) ARAhalf(n)=0.
 if(CALhalf(n).lt.1.d-70) CALhalf(n)=0.
-```
-
-The next routine calculates the projected aqueous phase fields at half-time in order to treat the non-linearities. This uses an upwind scheme for the advection and forward Euler for the diffusion part. I wonder how this affects the stability of the algorithm. Values of $\phi_{i+1/2}$ are again clamped to the open interval $(0, 1)$, staying a margin $\epsilon$ away from either 1 or 0 to avoid divisions by zero elsewhere in the code.
-
-If $\phi_i \le \epsilon$, the diffusion term in evaluating $\partial_t \hat{c}_k$ is dropped. Otherwise, we are looking at upwind for the advection part. The double derivative part:
-
-$$\begin{align}
-k_{i+1/2} &= k_i - a w_i ((1-{\rm sig}k_i) k_{i+1} + 2({\rm sig}k_i)k_i - (1+{\rm sig} k_i)k_{i-1})\\
-          &+ {b \over \phi_i}(\phi_{i+1} d^k_{i+1} + \phi{i} d^k_{i})(k_{i+1} - k_{i})
-           - {b \over \phi_i}(\phi_{i-1} d^k_{i-1} + \phi{i} d^k_{i})(k_{i} - k_{i-1})\\
-          &+ {\Delta t \over 2} R^k_{i}.
-\end{align}$$
-
-``` {.fortran #project-y}
+! ~\~ end
+return
+end
+! ~\~ end
+! ~\~ begin <<lit/index.md|project-y>>[init]
 SUBROUTINE  projectY(n,ph,ca,co,W,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf,cahalf,cohalf)
     real*8 ph(0:1000),W(0:1000),cahalf(0:1000),cohalf(0:1000),phalf(0:1000),sigpo(0:1000)
     REAL*8 ca(0:1000),co(0:1000),dca(0:1000),dco(0:1000),sigca(0:1000),sigco(0:1000),Rca(0:1000),Rco(0:1000)
@@ -739,59 +671,8 @@ SUBROUTINE  projectY(n,ph,ca,co,W,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf,cah
     if(cohalf(n).lt.1.d-15) cohalf(n)=0.
     return
 end
-```
-
-# Upwind scheme
-
-``` {.fortran #upwind}
-           subroutine upwind(n,ARA,CAL,U,S,RAR,RCAL)
-! Implementation of the upwind scheme for the advection equations
-           real*8 U(0:1000),ARA(0:1000),CAL(0:1000)
-           REAL*8 RAR(0:1000),RCAL(0:1000),ARAnew(0:1000),CALnew(0:1000)
-           REAL*8 S(0:1000)
-           REAL*8 dt,dx,P(35),a
-
-               integer N,i
-           COMMON/par/P
-           dx=P(16)
-           dt=P(15)
-
-           a=dt/dx
-           ARAnew(0)=ARA(0)
-           CALnew(0)=CAL(0)
-
-           do i=1,n-1
-             ARANEW(i)=ARA(i)-a*u(i)*(ARA(i)*S(i)-ARA(i-1)*0.5*(S(i)+1.)+ARA(i+1)*0.5*(1.-S(i)))&
- &              +dt*RAR(i)
-             CALNEW(i)=CAL(i)-a*u(i)*(CAL(i)*S(i)-CAL(i-1)*0.5*(S(i)+1.)+CAL(i+1)*0.5*(1.-S(i)))&
- &               +dt*RCAL(i)
-             if(1-ARAnew(i)-CALnew(i).lt.1.d-70) ARAnew(i)=1-CALnew(i)
-             if(1-CALnew(i).lt.1.d-10) CALnew(i)=1.
-             if(1-ARAnew(i).lt.1.d-10) ARAnew(i)=1.
-             if(ARAnew(i).lt.1.d-70) ARAnew(i)=0.
-             if(CALnew(i).lt.1.d-70) CALnew(i)=0.
-           end do
-
-             ARAnew(n)=ARA(n)-a*u(n)*S(n)*(ARA(n)-ARA(n-1))+dt*RAR(n)
-             CALnew(n)=CAL(n)-a*u(n)*S(n)*(CAL(n)-CAL(n-1))+dt*RCAL(n)
-
-             if(1-ARAnew(n)-CALnew(n).lt.1.d-70) ARAnew(n)=1-CALnew(n)
-             if(1-CALnew(n).lt.1.d-10) CALnew(n)=1.
-             if(1-ARAnew(n).lt.1.d-10) ARAnew(n)=1.
-             if(ARAnew(n).lt.1.d-70) ARAnew(n)=0.
-             if(CALnew(n).lt.1.d-70) CALnew(n)=0.
-
-!    update
-             do i=0,n
-                ARA(i)=ARAnew(i)
-                CAL(i)=CALnew(i)
-             end do
-           return
-           end
-```
-
-# Crank-Nicolson
-``` {.fortran #crank-nicolson}
+! ~\~ end
+! ~\~ begin <<lit/index.md|crank-nicolson>>[init]
            subroutine CRANK(t,n,ph,ca,co,Whalf,dca,dco,sigpo,sigca,sigco,Rp,Rca,Rco,phalf)
 ! implementation of the Crank-Nicholson scheme for the advection-diffusion equations: X(n+1)=(A^-1).B.X(n)
            real*8 ph(0:1000),ca(0:1000),co(0:1000),Whalf(0:1000),sigpo(0:1000),phalf(0:1000)
@@ -972,11 +853,8 @@ end
           end do
           return
        end
-```
-
-# Initialisation
-
-``` {.fortran #init}
+! ~\~ end
+! ~\~ begin <<lit/index.md|init>>[init]
        subroutine init
 ! This routine defines all parameter values and initial conditions, to be passed in vector P.
            use cfgio_mod, only: cfg_t, parse_cfg
@@ -1144,4 +1022,5 @@ end
            write(6,*) '1/cXs,Dpor/Dca=',P(33),P(35)
        return
        end
-```
+! ~\~ end
+! ~\~ end
