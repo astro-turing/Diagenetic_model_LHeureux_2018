@@ -251,7 +251,7 @@ subroutine auxf(t,n,ph,ca,co,ARA,CAL,U,S,W,OC,OA,dca,dco,sigpo,sigca,sigco,Rp,Rc
         ! velocities, Peclet numbers, diffusion coefficients and reaction rates
         ! In case the porosity is close to one
         if ((1-ph(i)).le.0.05)  then
-            write(6,*) 'p>0.95 for t,i',t,i
+            !write(6,*) 'p>0.95 for t,i',t,i
             ! permeability
             k(i)=betasV*10.*ph(i)**2/(1-ph(i))
             u(i)=k(i)*(1-ph(i))*(rhosw0-1)+P(23)-P(13)*k(0)*(1-ph(0))
@@ -759,7 +759,7 @@ subroutine init
     length=500.
     Th=100.
     eps=1.d-2
-    tmax=10000000
+    tmax=100000
     outt=1000
     outx=tmax/4
     N=200
