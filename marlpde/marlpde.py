@@ -34,8 +34,8 @@ class Scenario:
     S: quantity      = 0.1 * u.cm / u.a
     # cAthy: quantity  = 0.1 * u.dimensionless
     phiinf: quantity = 0.01 * u.dimensionless
-    phi0: quantity   = 0.6 * u.dimensionless
-    phiin: quantity  = 0.5 * u.dimensionless
+    phi0: quantity   = 0.8 * u.dimensionless
+    phiin: quantity  = 0.8 * u.dimensionless
     ca0: quantity    = 0.326e-3 * u.M
     co30: quantity   = 0.326e-3 * u.M
     ccal0: quantity  = 0.3 * u.dimensionless

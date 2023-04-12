@@ -767,13 +767,13 @@
 !  bb=sediment compressibility in (kPa)-1
 !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-           dt=1.d-5
+           dt=1.d-6
            xdis=50.
            length=500.
            Th=100.          
            eps=1.d-2       
            !tmax=10000000
-           tmax=100000
+           tmax=5000000
            outt=1000       
            outx=tmax/4
            N=200
@@ -795,7 +795,7 @@
            m=2.48
            nn=2.8                   
            S=0.1
-           bb=10.0d0
+           bb=5.0d0
            phiinf=eps
 !  new incoming sediment          
            phi0=0.8 
