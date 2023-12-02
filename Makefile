@@ -4,14 +4,41 @@
 
 build_dir := build
 target := $(build_dir)/lheureux
+new_target := $(build_dir)/marl-pde
+f2008 = $(build_dir)/lheureux08
 
-legacy_flags := -O3 -ffree-form -std=f2008
+hdf5_cflags = $(shell h5fc -show '%' | cut -d% -f1 | cut -d' ' -f2-)
+hdf5_libs = $(shell h5fc -show '%' | cut -d% -f2 | cut -d' ' -f2-)
 
-#object_files :=
+legacy_flags := -Ofast -fbacktrace -Wall -Wextra -ffree-form \
+         -fimplicit-none -g -fcheck=all -std=legacy
+cflags := -Ofast -fbacktrace -Wall -Wextra  \
+         -fimplicit-none -g -fcheck=all -ffree-line-length-none \
+		 $(hdf5_cflags) -fintrinsic-modules-path /usr/lib64/gfortran/modules
+f08_flags = -O3 -ffree-form -std=f2008 -g
 
-$(target): src/lheureux.f90
+libs := $(hdf5_libs)
+object_files := $(patsubst %.f90,build/%.o,$(wildcard src/*.f90))
+
+all: $(target) $(new_target)
+
+build/%.o: %.f90
+	@mkdir -p $(@D)
+	gfortran -o $@ $(cflags) -c $<
+
+$(target): src/lheureux.f
 	@mkdir -p $(@D)
 	gfortran $(legacy_flags) $< -o $@
+
+$(new_target): $(object_files)
+	@mkdir -p $(@D)
+	gfortran $^ $(libs) -o $@
+
+$(f2008): src/lheureux.f90
+	@mkdir -p $(@D)
+	gfortran $(f08_flags) $< -o $@
+
+.DEFAULT_GOAL := $(f2008)
 
 # ENTANGLED + PANDOC PART
 
