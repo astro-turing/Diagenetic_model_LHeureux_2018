@@ -7,9 +7,6 @@ target := $(build_dir)/lheureux
 new_target := $(build_dir)/marl-pde
 f2008 = $(build_dir)/lheureux08
 
-hdf5_cflags = $(shell h5fc -show '%' | cut -d% -f1 | cut -d' ' -f2-)
-hdf5_libs = $(shell h5fc -show '%' | cut -d% -f2 | cut -d' ' -f2-)
-
 legacy_flags := -Ofast -fbacktrace -Wall -Wextra -ffree-form \
          -fimplicit-none -g -fcheck=all -std=legacy
 cflags := -Ofast -fbacktrace -Wall -Wextra  \
@@ -17,10 +14,12 @@ cflags := -Ofast -fbacktrace -Wall -Wextra  \
 		 $(hdf5_cflags) -fintrinsic-modules-path /usr/lib64/gfortran/modules
 f08_flags = -O3 -ffree-form -std=f2008 -g
 
-libs = $(hdf5_libs)
-object_files := $(patsubst %.f90,build/%.o,$(wildcard src/*.f90))
-
 all: $(target) $(new_target)
+
+all: hdf5_cflags = $(shell h5fc -show '%' | cut -d% -f1 | cut -d' ' -f2-)
+all: hdf5_libs = $(shell h5fc -show '%' | cut -d% -f2 | cut -d' ' -f2-)
+all: libs = $(hdf5_libs)
+all: object_files := $(patsubst %.f90,build/%.o,$(wildcard src/*.f90))
 
 build/%.o: %.f90
 	@mkdir -p $(@D)
