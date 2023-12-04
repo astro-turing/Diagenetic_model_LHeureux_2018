@@ -17,7 +17,7 @@ cflags := -Ofast -fbacktrace -Wall -Wextra  \
 		 $(hdf5_cflags) -fintrinsic-modules-path /usr/lib64/gfortran/modules
 f08_flags = -O3 -ffree-form -std=f2008 -g
 
-libs := $(hdf5_libs)
+libs = $(hdf5_libs)
 object_files := $(patsubst %.f90,build/%.o,$(wildcard src/*.f90))
 
 all: $(target) $(new_target)
