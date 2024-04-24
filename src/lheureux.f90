@@ -891,7 +891,8 @@ subroutine init
    length = 500.
    Th = 100.
    eps = 1.d-2
-   tmax=5000000
+! dt * tmax = for how many T* the model runs
+   tmax=30000000 
    outt = 1000
    outx = tmax/4
    N = 200
@@ -904,11 +905,8 @@ subroutine init
    D0co3 = 272.6
    Ka = 10.**(-6.19)
    Kc = 10.**(-6.37)
-   beta = 0.01
    beta = 0.1
-   k2 = 1.d-2
    k2 = 1.0
-   k3 = 1.d-3
    k3 = 0.1
    m = 2.48
    nn = 2.8
@@ -916,22 +914,24 @@ subroutine init
    bb = 5.0d0
    phiinf = eps
 !  new incoming sediment
-   phi0 = 0.8
+! surface porosity
+   phi0 = 0.8 
    ca0 = 0.5*dsqrt(Kc)
    co30 = 0.5*dsqrt(Kc)
    ccal0 = 0.3
    cara0 = 0.6
 !  old uniform sediment
-   phi00 = 0.8
+! initial porosity profile
+   phi00 = 0.8 
    ca00 = 0.5*dsqrt(Kc)
    co300 = 0.5*dsqrt(Kc)
    ccal00 = 0.3
    cara00 = 0.6
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   ! In other versions, beta was used to scale the velocity
-   ! Scale velocity with beta
+! In other versions, beta was used to scale the velocity
+! Scale velocity with beta
    Vscale = beta
-   ! Scale velocity with S
+! Scale velocity with S
    Vscale = S
    rhos0 = rhot/(1 - cara0*(1 - rhot/rhoa) - ccal0*(1 - rhot/rhoc))
    Xs = D0ca/Vscale
