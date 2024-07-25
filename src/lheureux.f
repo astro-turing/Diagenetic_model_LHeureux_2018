@@ -799,14 +799,14 @@
            phiinf=eps
 !  new incoming sediment          
            phi0=0.8 
-           ca0=0.5*dsqrt(Kc)
-           co30=0.5*dsqrt(Kc)
+           ca0=0.326d-3
+           co30=0.326d-3
            ccal0=0.3
            cara0=0.6
 !  old uniform sediment
            phi00=0.8
-           ca00=0.5*dsqrt(Kc)
-           co300=0.5*dsqrt(Kc)
+           ca00=0.326d-3
+           co300=0.326d-3
            ccal00=0.3
            cara00=0.6           
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
