@@ -12,9 +12,11 @@ end module
 
 module general
    use vecsize
+   use, intrinsic :: iso_fortran_env, only: real64, int64
    implicit none
    real(kind=8) pho(0:vsize), cao(0:vsize), coo(0:vsize), ARAo(0:vsize), CALo(0:vsize)
-   integer tmax, outx, N, outt
+   integer outx, N, outt
+   integer(int64) :: tmax
 end module
 
 module par
