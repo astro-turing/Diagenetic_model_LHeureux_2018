@@ -873,7 +873,8 @@ subroutine init
    implicit none
    real(kind=8) dt, dx, Th, mua, rhoa, rhoc, rhot, rhow, D0ca, D0co3, Ka, Kc, beta, k2, k3, length, xdis
    real(kind=8) m, nn, S, phi0, ca0, co30, ccal0, cara0, Vscale, rhos0, Xs, Ts, eps
-   real(kind=8) phi00, ca00, co300, ccal00, cara00, phiinf, bb
+   real(kind=8) phi00, ca00, co300, ccal00, cara00, phiinf
+   real(real64) :: bb
    integer i
 
 !   DIMENSIONLESS TIMES, tmax=max time index, outx = time index for graphic x output
@@ -913,7 +914,7 @@ subroutine init
    m = 2.48
    nn = 2.8
    S = 0.1
-   bb = 5.0d0
+   bb = 1.066667
    phiinf = eps
 !  new incoming sediment
 ! surface porosity
