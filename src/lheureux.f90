@@ -895,7 +895,7 @@ subroutine init
    Th = 100.
    eps = 1.d-2
 ! dt * tmax = for how many T* the model runs
-   tmax = 5000000000_int64
+   tmax = 1000000_int64
    outt = 1000
    outx = tmax/4
    N = 200
