@@ -1,8 +1,8 @@
 # Fortran code for the formation of limestone-marl alternations
 
-This is the Fortran code that was used to produce the results in L'Heureux 2018 paper "Diagenetic Self-Organization and Stochastic Resonance in a Model of Limestone-Marl Sequences".
+This is the Fortran code that was used to produce the results in L'Heureux 2018 paper ["Diagenetic Self-Organization and Stochastic Resonance in a Model of Limestone-Marl Sequences"](https://onlinelibrary.wiley.com/doi/abs/10.1155/2018/4968315).
 
-The code has been modified by Lukas van de Wiel (Utrecht University) to match the Fortran 2008 standard. That version is in the `lheureux.f90` file. The `.f90` extension seems to be required by Ifort so it is kept here.
+This codebase is not maintained. It has been made public by Johan Hidding and Emilia Jarochowska based on a written permission by Ivan L'Heureux. 
 
 ## Building and running
 
@@ -35,5 +35,11 @@ The maintainers of this package are not directly affiliated with the original au
 ## Code versions
 
 - The original code as sent to as by Ivan L'Heureux is in the protected branch `corrected_archive`. `corrected` refers to corrections made by I. L'Heureux himself upon our request. This is the basis for the code in the `main` branch.
+
+- The code has been updated to FORTRAN 2008 standard by Lukas van de Wiel (Utrecht University). That version is in the `lheureux.f90` file. The `.f90` extension seems to be required by Ifort so it is kept here.
+
+- In the porosity diffusion coefficient, $D_{\phi}$, the nominator has been corrected from `phi00*3` to `phi00**3` to match equation 25 in L'Heureux (2018). This correction would change the value of the coefficient to one that did not yield oscillatory solutions for conditions identified in the article. To adjust the value of $D_{\phi}$, we changed also the value of parameter $b$, sediment compressibility, so that the final value of $\phi^3_{original}$ = $\phi \times 3_{adjusted}$.
+
+- The concentrations of solutes in initial and surface sediment were given in the input parameters of the original version as scaled by $\sqrt(K_C)$, but another division by $\sqrt(K_C)$ followed in the code, resulting in incorrect initial concentrations of the solutes with respect to what was presented in L'Heureux (2018). 
 
 - Johan Hidding expanded the code to save output into a `hdf5` file and allow reading parameters from a config file. However, this seems to cause problems due to the conversion of data types and most likely needs testing and modifications before it can be relied upon. This version is in the `config_file` branch. It includes the `cfg` parser from [pkgpl/cfgio](https://github.com/pkgpl/cfgio) by Wansoo Ha.
