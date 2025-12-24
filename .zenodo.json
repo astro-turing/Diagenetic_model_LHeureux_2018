@@ -1,0 +1,45 @@
+{
+    "creators": [
+        {
+            "name": "L'Heureux, Ivan",
+            "affiliation": "University of Ottaw",
+        }
+    ],
+    "contributors": [
+        {
+            "name": "Hidding, Johan",
+            "orcid": "0000-0002-1825-0097",
+            "affiliation": "Netherlands eScience Center"
+        },
+        {
+            "name": "Jarochowska, Emilia",
+            "orcid": "0000-0001-8937-9405",
+            "affiliation": "Utrecht University",
+        },
+        {
+            "name": "van de Wiel, Lukas",
+            "affiliation": "Utrecht University",
+        }
+    ],
+    "title": "Memory bus simulation scripts",
+    "version": "0.1.0",
+    "access_right": "open",
+    "related_identifiers": [
+        {
+            "identifier": "https://doi.org/10.1155/2018/4968315",
+            "relation": "isSupplementTo",
+            "resource_type": "publication-article"
+        }
+    ],
+    "keywords": [
+        "reactive transport",
+        "diagenesis",
+        "limestone-marl alternations"
+    ],
+    "license": "Apache-2.0",
+    "upload_type": "software",
+    "language": "eng",
+    "grants": [
+        {"id": "101041077"}
+    ]
+}
