@@ -38,7 +38,7 @@ The maintainers of this package are not directly affiliated with the original au
 
 - The code has been updated to FORTRAN 2008 standard by Lukas van de Wiel (Utrecht University). That version is in the `lheureux.f90` file. The `.f90` extension seems to be required by Ifort so it is kept here.
 
-- In the porosity diffusion coefficient, $D_{\phi}$, the nominator has been corrected from `phi00*3` to `phi00**3` to match equation 25 in L'Heureux (2018). This correction would change the value of the coefficient to one that did not yield oscillatory solutions for conditions identified in the article. To adjust the value of $D_{\phi}$, we changed also the value of parameter $b$, sediment compressibility, so that the final value of $\phi^3_{original}$ = $\phi_{adjusted} \times 3$.
+- In the porosity diffusion coefficient, $D_{\phi}$, the numerator has been corrected from `phi00*3` to `phi00**3` to match equation 25 in L'Heureux (2018). This correction would change the value of the coefficient to one that did not yield oscillatory solutions for conditions identified in the article. To adjust the value of $D_{\phi}$, we changed also the value of parameter $b$, sediment compressibility, so that the final value of $D_{\phi}$ remains the same as when calculated using `phi00*3`.
 
 - The concentrations of solutes in initial and surface sediment were given in the input parameters of the original version as scaled by $\sqrt(K_C)$, but another division by $\sqrt(K_C)$ followed in the code, resulting in incorrect initial concentrations of the solutes with respect to what was presented in L'Heureux (2018). 
 
